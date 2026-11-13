@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DARK CODE | شات حساب الشغل الذكي</title>
+    <link rel="icon" href="./1.jpg" type="image/jpeg">
+    <script src="https://cdn.tailwindcss.com"></script>
+  
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+      <link rel="icon" href="./img/./1.svg" type="Dark Code">
+    <style>
+        :root {
+            --bg-main: #090a0f;
+            --bg-sidebar: #050608;
+            --bg-surface: #12151f;
+            --bg-user-msg: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+            --bg-bot-msg: #151926;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --gold-primary: #d4af37;
+            --gold-bright: #fde047;
+            --border-color: rgba(212, 175, 55, 0.22);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --input-bg: #12151f;
+        }
+
+        body.light-mode {
+            --bg-main: #f8fafc;
+            --bg-sidebar: #f1f5f9;
+            --bg-surface: #ffffff;
+            --bg-user-msg: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+            --bg-bot-msg: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --gold-primary: #b45309;
+            --gold-bright: #d97706;
+            --border-color: #cbd5e1;
+            --border-subtle: #e2e8f0;
+            --input-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            height: 100dvh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            transition: background-color 0.25s, color 0.25s;
+        }
+
+        /* القائمة الجانبية للمحادثات المحفوظة */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-sidebar);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+            z-index: 50;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                transform: translateX(100%);
+                box-shadow: -10px 0 30px rgba(0,0,0,0.6);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+
+        .new-chat-btn {
+            margin: 14px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #d4af37 0%, #b45309 100%);
+            color: #000;
+            font-weight: 800;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
+            transition: 0.2s;
+        }
+
+        .new-chat-btn:hover {
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 10px 14px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .chat-history-item {
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: 0.18s;
+        }
+
+        .chat-history-item:hover {
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .chat-history-item.active {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+            font-weight: 800;
+        }
+
+        /* منطقة الشات الرئيسية */
+        .main-chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-width: 0;
+            position: relative;
+        }
+
+        .top-navbar {
+            height: 68px;
+            padding: 0 18px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            cursor: pointer;
+        }
+
+        .logo-frame {
+            width: 46px;
+            height: 46px;
+            border-radius: 11px;
+            background: #000;
+            border: 1.5px solid #d4af37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+            flex-shrink: 0;
+        }
+
+        .logo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .brand-name {
+            font-size: 1.25rem;
+            font-weight: 900;
+            letter-spacing: 0.8px;
+            background: linear-gradient(to left, #fde68a, #d4af37, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+        }
+
+        .brand-sub {
+            font-size: 0.65rem;
+            color: #d4af37;
+            letter-spacing: 2px;
+            font-weight: 700;
+            display: block;
+        }
+
+        .icon-btn {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: rgba(212, 175, 55, 0.22);
+        }
+
+        /* رسائل المحادثة */
+        .messages-viewport {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 14px 28px 14px;
+            scroll-behavior: smooth;
+        }
+
+        .messages-container {
+            max-width: 820px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .msg-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            animation: msgSlide 0.22s ease-out;
+        }
+
+        @keyframes msgSlide {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-item.user {
+            flex-direction: row;
+        }
+
+        .msg-item.bot {
+            flex-direction: row;
+        }
+
+        .avatar-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .msg-item.user .avatar-circle {
+            background: var(--bg-user-msg);
+            color: #fff;
+        }
+
+        .msg-item.bot .avatar-circle {
+            background: #000;
+            border: 1.5px solid #d4af37;
+            color: #d4af37;
+        }
+
+        .msg-content-wrap {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .msg-sender-name {
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .msg-bubble {
+            padding: 14px 18px;
+            border-radius: 16px;
+            font-size: 1rem;
+            line-height: 1.75;
+            border: 1px solid var(--border-subtle);
+            word-wrap: break-word;
+        }
+
+        .msg-item.user .msg-bubble {
+            background: var(--bg-user-msg);
+            color: #ffffff;
+            border-top-right-radius: 4px;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .msg-item.bot .msg-bubble {
+            background: var(--bg-bot-msg);
+            color: var(--text-primary);
+            border-top-right-radius: 4px;
+            border-color: var(--border-color);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+            width: 100%;
+        }
+
+        /* تصميم بطاقة الفاتورة الاحترافية داخل الشات مع الإجمالي في الوسط */
+        .chat-invoice-card {
+            margin-top: 12px;
+            background: rgba(9, 10, 15, 0.55);
+            border: 1.5px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            overflow: hidden;
+        }
+
+        body.light-mode .chat-invoice-card {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .inv-header-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .inv-badge {
+            background: rgba(212, 175, 55, 0.14);
+            border: 1px solid var(--border-color);
+            color: var(--gold-bright);
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 800;
+        }
+
+        body.light-mode .inv-badge {
+            color: #92400e;
+            background: #fef3c7;
+            border-color: #f59e0b;
+        }
+
+        .inv-grid-boxes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        @media (max-width: 500px) {
+            .inv-grid-boxes {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .inv-stat-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 11px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .inv-stat-label {
+            font-size: 0.86rem;
+            color: var(--text-secondary);
+            font-weight: 700;
+        }
+
+        .inv-stat-sub {
+            display: block;
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .inv-stat-val {
+            font-size: 1.05rem;
+            font-weight: 900;
+            color: #38bdf8;
+            white-space: nowrap;
+        }
+
+        /* صندوق الإجمالي الكبير والبارز في وسط الخانات */
+        .inv-center-total-box {
+            margin: 14px 0;
+            padding: 16px 20px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(16, 185, 129, 0.18) 100%);
+            border: 2px solid #d4af37;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+            position: relative;
+        }
+
+        body.light-mode .inv-center-total-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #dcfce7 100%);
+            border-color: #d97706;
+        }
+
+        .inv-center-total-title {
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .inv-center-total-number {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #4ade80;
+            line-height: 1.2;
+            text-shadow: 0 2px 10px rgba(74, 222, 128, 0.25);
+        }
+
+        body.light-mode .inv-center-total-number {
+            color: #15803d;
+            text-shadow: none;
+        }
+
+        .msg-actions-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .msg-actions-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .msg-action-chip {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            padding: 4px 11px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.15s;
+        }
+
+        .msg-action-chip:hover {
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        /* منطقة الإدخال السفلية مثل Gemini */
+        .composer-outer {
+            padding: 10px 14px 16px 14px;
+            background: linear-gradient(to top, var(--bg-main) 75%, transparent);
+            flex-shrink: 0;
+        }
+
+        .composer-inner {
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        .suggestions-strip {
+            display: flex;
+            gap: 7px;
+            overflow-x: auto;
+            padding-bottom: 9px;
+            scrollbar-width: none;
+        }
+        .suggestions-strip::-webkit-scrollbar { display: none; }
+
+        .suggestion-pill {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 13px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .suggestion-pill:hover {
+            background: rgba(212, 175, 55, 0.16);
+            color: var(--gold-bright);
+        }
+
+        .composer-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--input-bg);
+            border: 1.5px solid var(--border-color);
+            border-radius: 20px;
+            padding: 8px 10px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+            transition: border-color 0.2s;
+        }
+
+        .composer-box:focus-within {
+            border-color: #f59e0b;
+        }
+
+        .chat-textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.02rem;
+            font-weight: 600;
+            padding: 6px 8px;
+            resize: none;
+            max-height: 130px;
+            outline: none;
+            line-height: 1.5;
+        }
+
+        .mic-button {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            border: 1.5px solid rgba(239, 68, 68, 0.5);
+            background: rgba(239, 68, 68, 0.12);
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: 0.2s;
+        }
+
+        .mic-button:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        .mic-button.recording {
+            background: #ef4444;
+            color: #fff;
+            border-color: #fff;
+            animation: micPulse 1.1s infinite;
+        }
+
+        @keyframes micPulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.75); }
+            70% { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .send-button {
+            height: 46px;
+            padding: 0 18px;
+            border-radius: 14px;
+            border: none;
+            background: linear-gradient(135deg, #d4af37 0%, #b45309 100%);
+            color: #000;
+            font-weight: 900;
+            font-size: 0.96rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+            transition: 0.2s;
+        }
+
+        .send-button:hover {
+            filter: brightness(1.1);
+        }
+
+        /* شريط حالة التسجيل الصوتي */
+        .voice-status-banner {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(239, 68, 68, 0.16);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 8px 14px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .voice-status-banner.active {
+            display: flex;
+        }
+
+        /* نافذة الإعدادات المنبثقة */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 16px;
+        }
+
+        .modal-card {
+            background: var(--bg-surface);
+            border: 1.5px solid var(--border-color);
+            border-radius: 18px;
+            width: 100%;
+            max-width: 580px;
+            max-height: 88vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-main);
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        #toastAlert {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #10b981;
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            z-index: 200;
+            display: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== القائمة الجانبية للمحادثات والمشاريع ==================== -->
+    <aside class="sidebar" id="sidebarPanel">
+        <button type="button" class="new-chat-btn" onclick="createNewChatSession()">
+            <span>➕</span>
+            <span>محادثة / شغلانة جديدة</span>
+        </button>
+
+        <div style="padding: 0 14px 8px 14px; font-size: 0.78rem; font-weight: 800; color: var(--text-muted); display:flex; justify-content:space-between; align-items:center;">
+            <span>سجل الشغلانات المحفوظة</span>
+            <span id="sessionsCountBadge">1</span>
+        </div>
+
+        <div class="chat-list" id="chatSessionsList"></div>
+
+        <div style="padding: 12px; border-top: 1px solid var(--border-subtle); display:flex; flex-direction:column; gap:6px;">
+            <button type="button" class="icon-btn" style="width:100%; justify-content:center;" onclick="openSettingsModal()">
+                ⚙️ إعدادات الأسعار والـ API
+            </button>
+        </div>
+    </aside>
+
+    <!-- ==================== منطقة الشات الرئيسية (مثل Gemini) ==================== -->
+    <main class="main-chat-area">
+        <!-- الهيدر -->
+        <header class="top-navbar">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <button type="button" class="icon-btn md:hidden" onclick="toggleMobileSidebar()" title="سجل المحادثات">
+                    ☰
+                </button>
+                <div class="brand-box" onclick="document.getElementById('logoUploadInput').click()" title="اضغط لتغيير صورة اللوجو (1.jpg)">
+                    <div class="logo-frame">
+                        <img id="brandLogoImg" src="./1.jpg" alt="DC" onerror="this.style.display='none'; document.getElementById('fallbackGoldSvg').style.display='block';">
+                        <svg id="fallbackGoldSvg" style="display:none; width:36px; height:36px;" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="dcGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FDE68A"/>
+                                    <stop offset="50%" stop-color="#D4AF37"/>
+                                    <stop offset="100%" stop-color="#92400E"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M22 25 H52 C74 25 88 40 88 60 C88 80 74 95 52 95 H22 V68 H36 V81 H50 C64 81 73 72 73 60 C73 48 64 39 50 39 H36 V52 H22 V25 Z" fill="url(#dcGold)"/>
+                            <path d="M102 42 C94 31 82 25 68 25 C46 25 32 40 32 60 C32 80 46 95 68 95 C82 95 94 89 102 78 L90 69 C84 77 77 81 68 81 C54 81 46 72 46 60 C46 48 54 39 68 39 C77 39 84 43 90 51 L102 42 Z" fill="url(#dcGold)" opacity="0.92"/>
+                            <circle cx="24" cy="60" r="4.5" stroke="url(#dcGold)" stroke-width="3" fill="#000"/>
+                            <circle cx="46" cy="50" r="4" stroke="url(#dcGold)" stroke-width="2.5" fill="#000"/>
+                            <circle cx="46" cy="70" r="4" stroke="url(#dcGold)" stroke-width="2.5" fill="#000"/>
+                            <path d="M28.5 60 H37 L43 52 M37 60 L43 68" stroke="url(#dcGold)" stroke-width="2.8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="brand-name">DARK CODE</div>
+                        <span class="brand-sub">BUSINESS SERVICES</span>
+                    </div>
+                    <input type="file" id="logoUploadInput" accept="image/*" style="display:none" onchange="uploadCustomLogo(event)">
+                </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+                <button type="button" class="icon-btn" id="voiceSpeakBtn" onclick="toggleAutoSpeak()" title="نطق الردود صوتياً">
+                    🔊 الصوت: مفعل
+                </button>
+                <button type="button" class="icon-btn" id="themeBtn" onclick="toggleThemeMode()">
+                    ☀️ نهاري
+                </button>
+                <button type="button" class="icon-btn" onclick="openSettingsModal()" title="الإعدادات والأسعار">
+                    ⚙️
+                </button>
+            </div>
+        </header>
+
+        <!-- نافذة الرسائل -->
+        <div class="messages-viewport" id="messagesViewport">
+            <div class="messages-container" id="messagesContainer"></div>
+        </div>
+
+        <!-- شريط الكتابة والتسجيل الصوتي -->
+        <div class="composer-outer">
+            <div class="composer-inner">
+                <!-- إشعار التسجيل الصوتي الحي -->
+                <div class="voice-status-banner" id="voiceBanner">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span>🎙️ جاري سماع صوتك الآن... تفضل بالتحدث:</span>
+                        <strong id="liveVoicePreview" style="color:#fff;"></strong>
+                    </div>
+                    <button type="button" onclick="stopVoiceRecording()" style="background:#ef4444; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">إيقاف وإرسال</button>
+                </div>
+
+                <!-- أمثلة سريعة بضغطة واحدة -->
+                <div class="suggestions-strip">
+                    <button type="button" class="suggestion-pill" onclick="quickSend('عايز 20 دفتر 2 في التسعات أصل وصورة')">💬 20 دفتر 2 في التسعات أصل وصورة</button>
+                    <button type="button" class="suggestion-pill" onclick="quickSend('100 دفتر 4 في التمنيات أصل وصورتين و 2 زنكة')">💬 100 دفتر 4 في التمنيات أصل وصورتين</button>
+                    <button type="button" class="suggestion-pill" onclick="quickSend('150 دفتر 4 في 11 أصل و 3 صور')">💬 150 دفتر 4 في 11 أصل و 3 صور</button>
+                    <button type="button" class="suggestion-pill" onclick="quickSend('طب خليهم 200 دفتر وزود نسبة 10%')">💬 خليهم 200 دفتر ونسبة 10%</button>
+                    <button type="button" class="suggestion-pill" onclick="quickSend('خلي سعر الزنكة 70 جنيه')">💰 تعديل سعر الزنكة بالشات</button>
+                    <button type="button" class="suggestion-pill" onclick="quickSend('اعرضلي قائمة الأسعار كلها')">📋 قائمة الأسعار</button>
+                </div>
+
+                <!-- صندوق الإدخال والمايكروفون -->
+                <div class="composer-box">
+                    <button type="button" class="mic-button" id="micRecordBtn" onclick="toggleVoiceRecording()" title="اضغط للتحدث بالصوت بالعربي (مايكروفون)">
+                        🎙️
+                    </button>
+                    <textarea id="chatInputBox" rows="1" class="chat-textarea" placeholder="اكتب أو اضغط 🎙️ واتكلم.. (مثال: 20 دفتر 2 في التسعات أصل وصورة)" oninput="autoResizeTextarea(this)" onkeydown="handleEnterKey(event)"></textarea>
+                    <button type="button" class="send-button" onclick="submitUserMessage()">
+                        <span>إرسال</span>
+                        <span>➤</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==================== نافذة الإعدادات البسيطة (API + الأسعار) ==================== -->
+    <div class="modal-backdrop" id="settingsModal">
+        <div class="modal-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border-subtle); padding-bottom:10px;">
+                <h3 style="font-size:1.15rem; font-weight:900; color:var(--gold-primary);">⚙️ إعدادات DARK CODE والـ API</h3>
+                <button type="button" onclick="closeSettingsModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.3rem; cursor:pointer;">✕</button>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:14px;">
+                <div>
+                    <label style="font-size:0.85rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:4px;">مفتاح الـ API (مُفعل ومحفوظ تلقائياً):</label>
+                    <input type="text" id="setApiKey" class="form-input" dir="ltr" value="AQ.Ab8RN6LvhmUff8ldAljCdyLSXUdVdnXO-z4r5f9DXdXrmfAUUQ">
+                </div>
+
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+                    <div>
+                        <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary);">سعر الزنكة (ج):</label>
+                        <input type="number" id="setZinc" class="form-input" value="65">
+                    </div>
+                    <div>
+                        <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary);">سعر التراج (ج):</label>
+                        <input type="number" id="setTraj" class="form-input" value="100">
+                    </div>
+                    <div>
+                        <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary);">ورق الدفتر:</label>
+                        <input type="number" id="setSheets" class="form-input" value="50">
+                    </div>
+                </div>
+
+                <div style="background:rgba(212,175,55,0.08); border:1px solid var(--border-color); padding:10px 12px; border-radius:10px; font-size:0.84rem; line-height:1.6;">
+                    💡 <strong>معلومة سريعة:</strong> يمكنك أيضاً تعديل أي سعر مباشرة من خلال الشات! فقط اكتب له في الشات مثلاً: <em>"خلي سعر الزنكة 70 جنيه"</em> أو <em>"خلي سعر التراج 120"</em> وهيرد عليك ويحفظها فوراً.
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:8px;">
+                    <button type="button" onclick="saveSettingsFromModal()" style="flex:1; background:linear-gradient(135deg,#d4af37,#b45309); color:#000; font-weight:900; padding:11px; border-radius:10px; border:none; cursor:pointer;">💾 حفظ الإعدادات</button>
+                    <button type="button" onclick="factoryResetAll()" style="background:#dc2626; color:#fff; font-weight:700; padding:11px 14px; border-radius:10px; border:none; cursor:pointer;">إعادة ضبط الأسعار</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastAlert">تم النسخ بنجاح</div>
+
+    <script>
+        // =========================================================================
+        // 1. قاعدة البيانات الافتراضية الكاملة (جميع أسعارك ومعادلاتك في الكود الأصلي)
+        // =========================================================================
+        const STORAGE_PREFIX = 'darkcode_purechat_v1';
+        const DEFAULT_API_KEY = 'AQ.Ab8RN6LvhmUff8ldAljCdyLSXUdVdnXO-z4r5f9DXdXrmfAUUQ';
+
+        const defaultSettings = { zincPrice: 65, trajPrice: 100, sheetsPerBook: 50 };
+
+        const defaultPapers = {
+            'p1': { name: 'أصل+1', price: 7.50,  copies: 2 },
+            'p2': { name: 'أصل+2', price: 11.60, copies: 3 },
+            'p3': { name: 'أصل+3', price: 15.70, copies: 4 },
+            'p4': { name: 'أصل+4', price: 19.80, copies: 5 },
+            'p5': { name: 'أصل+5', price: 23.90, copies: 6 },
+            'p6': { name: 'أصل+6', price: 28.00, copies: 7 },
+            'p7': { name: 'أصل+7', price: 32.10, copies: 8 }
+        };
+
+        const defaultFormulas = {
+            '30*20': { exp: '50 / 11', trajForm: 1 },
+            '2*11':  { exp: '50 / 11', trajForm: 2 },
+            '3*11':  { exp: '50 / 11', trajForm: 3 },
+            '4*11':  { exp: '50 / 11', trajForm: 4 },
+            '9':     { exp: '50 / 9',  trajForm: 1 },
+            '2*9':   { exp: '50 / 9',  trajForm: 2 },
+            '3*9':   { exp: '50 / 9',  trajForm: 3 },
+            '4*9':   { exp: '50 / 9',  trajForm: 4 },
+            '8':     { exp: '50 / 8',  trajForm: 1 },
+            '2*8':   { exp: '50 / 8',  trajForm: 2 },
+            '4*8':   { exp: '50 / 8',  trajForm: 4 },
+            '25*20': { exp: '50 / 12', trajForm: 1 },
+            '40*30': { exp: '50 / 5',  trajForm: 1 },
+            '23*20': { exp: '50 / 15', trajForm: 1 },
+            '25*23': { exp: '50 / 12', trajForm: 1 }
+        };
+
+        const defaultBindings = {
+            'b1':  { name: '4*11',  label: '4*11 (10×10)',   basePrice: 1.50, stepPrice: 0.25 },
+            'b2':  { name: '2*11',  label: '2*11 (15×20)',   basePrice: 2.25, stepPrice: 0.25 },
+            'b3':  { name: '3*11',  label: '3*11 (10×20)',   basePrice: 2.00, stepPrice: 0.25 },
+            'b4':  { name: '30*20', label: '30*20 (1*11)',   basePrice: 4.25, stepPrice: 0.50 },
+            'b5':  { name: '4*9',   label: '4*9 (11×16)',    basePrice: 1.75, stepPrice: 0.25 },
+            'b6':  { name: '2*9',   label: '2*9 (16.5×23)',  basePrice: 2.50, stepPrice: 0.25 },
+            'b7':  { name: '3*9',   label: '3*9 (11×23)',    basePrice: 2.25, stepPrice: 0.25 },
+            'b8':  { name: '9',     label: '9 (23×33)',      basePrice: 4.25, stepPrice: 1.00 },
+            'b9':  { name: '4*8',   label: '4*8',            basePrice: 1.75, stepPrice: 0.25 },
+            'b10': { name: '2*8',   label: '2*8',            basePrice: 2.50, stepPrice: 0.25 },
+            'b11': { name: '8',     label: '8',              basePrice: 4.25, stepPrice: 1.00 },
+            'b12': { name: '25*20', label: '25*20',          basePrice: 4.25, stepPrice: 0.50 },
+            'b13': { name: '40*30', label: '40*30',          basePrice: 5.25, stepPrice: 1.00 },
+            'b14': { name: '23*20', label: '23*20',          basePrice: 4.25, stepPrice: 0.50 },
+            'b15': { name: '25*23', label: '25*23',          basePrice: 4.25, stepPrice: 0.50 }
+        };
+
+        let settings = {};
+        let papers = {};
+        let formulas = {};
+        let bindings = {};
+        let sessions = [];
+        let activeSessionId = null;
+        let autoSpeak = true;
+        let speechRec = null;
+        let isRecording = false;
+
+        function showToast(text, color = '#10b981') {
+            const el = document.getElementById('toastAlert');
+            el.textContent = text;
+            el.style.background = color;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 2500);
+        }
+
+        // =========================================================================
+        // 2. التهيئة والتحميل والحفظ التلقائي في المتصفح (Pure Frontend Storage)
+        // =========================================================================
+        function initApp() {
+            const savedTheme = localStorage.getItem('darkcode_theme') || 'dark';
+            if (savedTheme === 'light') document.body.classList.add('light-mode');
+            updateThemeButtonUI();
+
+            const savedLogo = localStorage.getItem('darkcode_custom_logo');
+            if (savedLogo) {
+                const img = document.getElementById('brandLogoImg');
+                img.src = savedLogo;
+                img.style.display = 'block';
+                document.getElementById('fallbackGoldSvg').style.display = 'none';
+            }
+
+            settings = JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_settings')) || JSON.parse(JSON.stringify(defaultSettings));
+            papers   = JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_papers'))   || JSON.parse(JSON.stringify(defaultPapers));
+            formulas = JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_formulas')) || JSON.parse(JSON.stringify(defaultFormulas));
+            bindings = JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_bindings')) || JSON.parse(JSON.stringify(defaultBindings));
+            sessions = JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_sessions')) || [];
+
+            const apiKey = localStorage.getItem('darkcode_api_key') || DEFAULT_API_KEY;
+            document.getElementById('setApiKey').value = apiKey;
+
+            if (sessions.length === 0) {
+                createNewChatSession();
+            } else {
+                activeSessionId = sessions[0].id;
+                renderSidebarSessions();
+                renderActiveChatMessages();
+            }
+
+            setupVoiceRecognition();
+        }
+
+        function saveState() {
+            localStorage.setItem(STORAGE_PREFIX + '_settings', JSON.stringify(settings));
+            localStorage.setItem(STORAGE_PREFIX + '_papers', JSON.stringify(papers));
+            localStorage.setItem(STORAGE_PREFIX + '_formulas', JSON.stringify(formulas));
+            localStorage.setItem(STORAGE_PREFIX + '_bindings', JSON.stringify(bindings));
+            localStorage.setItem(STORAGE_PREFIX + '_sessions', JSON.stringify(sessions));
+        }
+
+        function getActiveSession() {
+            return sessions.find(s => s.id === activeSessionId) || sessions[0];
+        }
+
+        function createNewChatSession() {
+            const newId = 'chat_' + Date.now();
+            const welcomeMsg = {
+                role: 'bot',
+                text: `أهلاً بك يا هندسة في **DARK CODE - BUSINESS SERVICES** 👋\n\nأنا فاهم كل مصطلحات المطبعة والسوق المصري (**التسعات، التمنيات، الحداشرات، في = \*، أصل وصورة، أصل وصورتين...**).\n\n🎙️ **اضغط على المايكروفون واتكلم بصوتك أو اكتبلي مثلاً:**\n• *"عايز 20 دفتر 2 في التسعات أصل وصورة"*\n• *"100 دفتر 4 في التمنيات أصل وصورتين و 2 زنكة"*\n• *"واحد في التسعات 50 دفتر أصل و 3 صور"*\n\n⚙️ **وكمان تقدر تعدل أو تضيف أي سعر بالكتابة أو الصوت في الشات فوراً:**\n• *"خلي سعر الزنكة 70"* أو *"خلي سعر ورق أصل وصورة 8"* أو *"خلي تجليد 2 في التسعات 3 جنيه"* وهيحفظها عنده للأبد!`
+            };
+            const newSession = {
+                id: newId,
+                title: 'شغلانة جديدة #' + (sessions.length + 1),
+                updatedAt: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+                jobState: null,
+                messages: [welcomeMsg]
+            };
+            sessions.unshift(newSession);
+            activeSessionId = newId;
+            saveState();
+            renderSidebarSessions();
+            renderActiveChatMessages();
+            document.getElementById('sidebarPanel').classList.remove('open');
+        }
+
+        function switchSession(id) {
+            activeSessionId = id;
+            renderSidebarSessions();
+            renderActiveChatMessages();
+            document.getElementById('sidebarPanel').classList.remove('open');
+        }
+
+        function deleteSession(id, e) {
+            e.stopPropagation();
+            sessions = sessions.filter(s => s.id !== id);
+            if (sessions.length === 0) {
+                createNewChatSession();
+                return;
+            }
+            if (activeSessionId === id) {
+                activeSessionId = sessions[0].id;
+            }
+            saveState();
+            renderSidebarSessions();
+            renderActiveChatMessages();
+        }
+
+        function renderSidebarSessions() {
+            const list = document.getElementById('chatSessionsList');
+            document.getElementById('sessionsCountBadge').textContent = sessions.length;
+            list.innerHTML = '';
+
+            sessions.forEach(s => {
+                const item = document.createElement('div');
+                item.className = 'chat-history-item' + (s.id === activeSessionId ? ' active' : '');
+                item.onclick = () => switchSession(s.id);
+                item.innerHTML = `
+                    <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">
+                        💬 ${s.title}
+                    </div>
+                    <button type="button" onclick="deleteSession('${s.id}', event)" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.85rem; padding:2px 6px;" title="حذف">✕</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // =========================================================================
+        // 4. قاموس مصطلحات المطبعة المصرية (التسعات، التمنيات، الحداشرات، في = *، أصل وصورة)
+        // =========================================================================
+        function normalizeSpokenArabic(text) {
+            if (!text) return '';
+            const arDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+            let s = ' ' + text + ' ';
+            arDigits.forEach((d, i) => { s = s.replace(new RegExp(d, 'g'), String(i)); });
+
+            // توحيد الحروف العربية وعلامة الضرب
+            s = s.replace(/[أإآ]/g, 'ا')
+                 .replace(/ة/g, 'ه')
+                 .replace(/ى/g, 'ي')
+                 .replace(/[×xX*]/g, ' * ');
+
+            // تحويل الكلمات العددية المنطوقة بالعامية المصرية إلى أرقام
+            const wordNumbers = [
+                { reg: /\bالفين\b/g, val: '2000' },
+                { reg: /\bالف\b/g, val: '1000' },
+                { reg: /\bخمسميه\b|\bخمسمايه\b|\bخمسمائه\b/g, val: '500' },
+                { reg: /\bربعميه\b|\bربعمايه\b|\bاربعمائه\b/g, val: '400' },
+                { reg: /\bتلتميه\b|\bتلتمايه\b|\bثلاثمائه\b|\bتلتميت\b/g, val: '300' },
+                { reg: /\bميتين\b|\bمائتين\b/g, val: '200' },
+                { reg: /\bميه\b|\bمائه\b|\bميت\b/g, val: '100' },
+                { reg: /\bخمسه\s*وتسعين\b/g, val: '95' },
+                { reg: /\bتسعين\b/g, val: '90' },
+                { reg: /\bخمسه\s*وتمانين\b|\bخمسه\s*وثمانين\b/g, val: '85' },
+                { reg: /\bتمانين\b|\bثمانين\b/g, val: '80' },
+                { reg: /\bخمسه\s*وسبعين\b/g, val: '75' },
+                { reg: /\bسبعين\b/g, val: '70' },
+                { reg: /\bخمسه\s*وستين\b/g, val: '65' },
+                { reg: /\bستين\b/g, val: '60' },
+                { reg: /\bخمسه\s*وخمسين\b/g, val: '55' },
+                { reg: /\bخمسين\b/g, val: '50' },
+                { reg: /\bخمسه\s*واربعين\b/g, val: '45' },
+                { reg: /\bاربعين\b/g, val: '40' },
+                { reg: /\bخمسه\s*وتلاتين\b|\bخمسه\s*وثلاثين\b/g, val: '35' },
+                { reg: /\bتلاتين\b|\bثلاثين\b/g, val: '30' },
+                { reg: /\bخمسه\s*وعشرين\b/g, val: '25' },
+                { reg: /\bتلاته\s*وعشرين\b|\bثلاثه\s*وعشرين\b/g, val: '23' },
+                { reg: /\bعشرين\b/g, val: '20' },
+                { reg: /\bخمسه\s*عشر\b|\bخمستاشر\b/g, val: '15' },
+                { reg: /\bاتناشر\b|\bاثناشر\b/g, val: '12' },
+                { reg: /\bحداشر\b|\bاحداشر\b/g, val: '11' },
+                { reg: /\bعشره\b|\bعشر\b/g, val: '10' },
+                { reg: /\bتسعه\b|\bتسع\b/g, val: '9' },
+                { reg: /\bتمانيه\b|\bثمانيه\b|\bتمن\b/g, val: '8' },
+                { reg: /\bسبعه\b|\bسبع\b/g, val: '7' },
+                { reg: /\bسته\b|\bست\b/g, val: '6' },
+                { reg: /\bخمسه\b|\bخمس\b/g, val: '5' },
+                { reg: /\bاربعه\b|\bاربع\b/g, val: '4' },
+                { reg: /\bتلاته\b|\bثلاثه\b|\bتلات\b|\bثلاث\b/g, val: '3' },
+                { reg: /\bاتنين\b|\bاثنين\b/g, val: '2' },
+                { reg: /\bواحد\b/g, val: '1' }
+            ];
+            wordNumbers.forEach(w => { s = s.replace(w.reg, ' ' + w.val + ' '); });
+
+            // القاعدة الخاصة بالمطبعة:
+            // "التسعات / التساعات / تسعات" = 9
+            // "التمنيات / الثمانيات / تمنيات" = 8
+            // "الحداشرات / حداشرات" = 11
+            s = s.replace(/التساعات|التسعات|تساعات|تسعات/g, ' 9 ');
+            s = s.replace(/التمنيات|الثمانيات|تمنيات|ثمانيات/g, ' 8 ');
+            s = s.replace(/الحداشرات|حداشرات/g, ' 11 ');
+
+            // القاعدة الذهبية: كلمة "في" أو "فى" بين رقمين تعني "*"
+            // نكررها مرتين لضمان التقاط أي تتابع مثل "2 في 9" -> "2*9"
+            s = s.replace(/(\d+)\s*(?:في|فى|\*)\s*(\d+)/g, ' $1*$2 ');
+            s = s.replace(/(\d+)\s*(?:في|فى|\*)\s*(\d+)/g, ' $1*$2 ');
+
+            // القاعدة الخاصة بـ: "1*8" معناها مقاس "8" (واحد في التمنيات)، و "1*9" معناها مقاس "9" (واحد في التسعات)، و "1*11" معناها "30*20"
+            s = s.replace(/\b1\*8\b/g, ' 8 ');
+            s = s.replace(/\b1\*9\b/g, ' 9 ');
+            s = s.replace(/\b1\*11\b/g, ' 30*20 ');
+
+            // توحيد المقاسات المتعاكسة الشائعة (مثل 20*30 -> 30*20، 10*10 -> 4*11)
+            s = s.replace(/\b20\*30\b/g, ' 30*20 ');
+            s = s.replace(/\b20\*25\b/g, ' 25*20 ');
+            s = s.replace(/\b30\*40\b/g, ' 40*30 ');
+            s = s.replace(/\b20\*23\b/g, ' 23*20 ');
+            s = s.replace(/\b23\*25\b/g, ' 25*23 ');
+            s = s.replace(/\b10\*10\b/g, ' 4*11 ');
+            s = s.replace(/\b15\*20\b/g, ' 2*11 ');
+            s = s.replace(/\b10\*20\b/g, ' 3*11 ');
+
+            return s.replace(/\s+/g, ' ').trim();
+        }
+
+        // استخراج نوع الورق (أصل وصورة / أصل وصورتين / أصل + عدد الصور)
+        function extractPaperCopiesFromText(normText) {
+            if (/اصل\s*و\s*صورتين|اصل\s*وصورتين/.test(normText)) return 3; // أصل + 2
+            const m = normText.match(/اصل\s*(?:\+|و)\s*(\d+)/);
+            if (m) {
+                const extraPics = parseInt(m[1], 10);
+                if (extraPics >= 1 && extraPics <= 10) return extraPics + 1;
+            }
+            if (/اصل\s*و\s*صوره|اصل\s*وصوره/.test(normText)) return 2; // أصل + 1
+            return null;
+        }
+
+        // استخراج المقاس من النص الموحد
+        function extractFormulaFromText(normText) {
+            const sortedSizes = Object.keys(formulas).sort((a, b) => b.length - a.length);
+            // أولاً: البحث عن المقاسات المركبة التي تحتوي على * مثل 2*9 أو 4*8 أو 30*20
+            for (const sz of sortedSizes) {
+                if (sz.includes('*')) {
+                    const escaped = sz.replace('*', '\\*');
+                    const reg = new RegExp(`(?:^|\\s|مقاس)${escaped}(?:$|\\s)`, 'i');
+                    if (reg.test(normText)) return sz;
+                }
+            }
+            // ثانياً: البحث عن المقاسات المفردة مثل "9" (التسعات) أو "8" (التمنيات)
+            if (/(?:^|\s)(?:مقاس\s*)?9(?:$|\s)/.test(normText) && formulas['9']) return '9';
+            if (/(?:^|\s)(?:مقاس\s*)?8(?:$|\s)/.test(normText) && formulas['8']) return '8';
+
+            // ثالثاً: إذا قال رقم مقاس في التسعات أو التمنيات غير موجود مسبقاً مثل "3*8" ننشئه تلقائياً بمعادلته الصحيحة!
+            const dynamicEight = normText.match(/\b([1-6])\*8\b/);
+            if (dynamicEight) {
+                const formNum = parseInt(dynamicEight[1], 10);
+                const key = formNum === 1 ? '8' : `${formNum}*8`;
+                if (!formulas[key]) {
+                    formulas[key] = { exp: '50 / 8', trajForm: formNum };
+                    bindings['b_dyn_' + key] = { name: key, label: key, basePrice: 2.00, stepPrice: 0.25 };
+                    saveState();
+                }
+                return key;
+            }
+
+            const dynamicNine = normText.match(/\b([1-6])\*9\b/);
+            if (dynamicNine) {
+                const formNum = parseInt(dynamicNine[1], 10);
+                const key = formNum === 1 ? '9' : `${formNum}*9`;
+                if (!formulas[key]) {
+                    formulas[key] = { exp: '50 / 9', trajForm: formNum };
+                    bindings['b_dyn_' + key] = { name: key, label: key, basePrice: 2.25, stepPrice: 0.25 };
+                    saveState();
+                }
+                return key;
+            }
+
+            return null;
+        }
+
+        function parseJobFromConversation(rawText, prevJobState) {
+            const norm = normalizeSpokenArabic(rawText);
+            const hasPrev = !!prevJobState;
+
+            const state = hasPrev ? Object.assign({}, prevJobState) : {
+                numBooks: 100,
+                formula: '30*20',
+                unifiedForm: 1,
+                copies: 2,
+                numZinc: 1,
+                noBinding: false,
+                extraCost: 0,
+                extraName: 'إضافات',
+                profitPercent: 0
+            };
+
+            let matchedAnything = false;
+
+            // 1. استخراج المقاس (بما في ذلك التسعات والتمنيات والحداشرات)
+            const detectedSize = extractFormulaFromText(norm);
+            if (detectedSize) {
+                state.formula = detectedSize;
+                state.unifiedForm = formulas[detectedSize]?.trajForm || 1;
+                state.manualPapers = null;
+                matchedAnything = true;
+            }
+
+            // 2. استخراج عدد الدفاتر
+            const bookMatch = norm.match(/(\d+)\s*(?:دفتر|دفاتر)/);
+            if (bookMatch) {
+                state.numBooks = parseInt(bookMatch[1], 10);
+                state.manualPapers = null;
+                matchedAnything = true;
+            } else if (hasPrev && /(?:خليهم|يبقوا|لو|اعملهم)\s*(\d+)/.test(norm) && !/زنك|تراج|نسبه|%|ورق|سعر/.test(norm)) {
+                const m = norm.match(/(?:خليهم|يبقوا|لو|اعملهم)\s*(\d+)/);
+                state.numBooks = parseInt(m[1], 10);
+                state.manualPapers = null;
+                matchedAnything = true;
+            } else if (matchedAnything) {
+                // لو قال مثلاً "عايز 20 2 في التسعات" بدون كلمة دفتر
+                const cleanedWithoutSize = norm.replace(detectedSize || '', ' ').replace(/اصل\s*(?:\+|و)\s*\d+/g, ' ');
+                const leadNum = cleanedWithoutSize.match(/(?:^|\s|عايز|احسب|احسبلي)\s*(\d+)(?:\s|$)/);
+                if (leadNum && parseInt(leadNum[1], 10) >= 5) {
+                    state.numBooks = parseInt(leadNum[1], 10);
+                    state.manualPapers = null;
+                }
+            }
+
+            // 3. نوع الورق (أصل وصورة، أصل وصورتين، أصل و 3 صور...)
+            const detectedCopies = extractPaperCopiesFromText(norm);
+            if (detectedCopies !== null) {
+                state.copies = detectedCopies;
+                matchedAnything = true;
+            }
+
+            // 4. الفورمة
+            const formMatch = norm.match(/فورمه\s*(\d+)/);
+            if (formMatch) {
+                const fn = parseInt(formMatch[1], 10);
+                if (fn >= 1 && fn <= 4) {
+                    state.unifiedForm = fn;
+                    state.manualPapers = null;
+                    matchedAnything = true;
+                }
+            }
+
+            // 5. الزنكات
+            if (/بدون زنك|من غير زنك|صفر زنك/.test(norm)) {
+                state.numZinc = 0; matchedAnything = true;
+            } else if (/زنكتين/.test(norm)) {
+                state.numZinc = 2; matchedAnything = true;
+            } else if (/زنكه واحده/.test(norm)) {
+                state.numZinc = 1; matchedAnything = true;
+            } else {
+                const zMatch = norm.match(/(\d+)\s*(?:زنكه|زنكات|زنك)/);
+                if (zMatch) {
+                    state.numZinc = parseInt(zMatch[1], 10);
+                    matchedAnything = true;
+                }
+            }
+
+            // 6. الورق اليدوي
+            const pMan = norm.match(/(?:خلي الورق|عدد الورق|افرخ الورق)\s*(\d+(?:\.\d+)?)/);
+            if (pMan) {
+                state.manualPapers = parseFloat(pMan[1]);
+                matchedAnything = true;
+            }
+
+            // 7. التجليد
+            if (/بدون تجليد|من غير تجليد|بلاش تجليد/.test(norm)) {
+                state.noBinding = true; matchedAnything = true;
+            } else if (/بتجليد|مع تجليد|رجع التجليد/.test(norm)) {
+                state.noBinding = false; state.customBindUnit = null; matchedAnything = true;
+            } else {
+                const bindManualMatch = norm.match(/(?:تجليد الدفتر|التجليد للدفتر)\s*(\d+(?:\.\d+)?)/);
+                if (bindManualMatch) {
+                    state.noBinding = false;
+                    state.customBindUnit = parseFloat(bindManualMatch[1]);
+                    matchedAnything = true;
+                }
+            }
+
+            // 8. الإضافات (قص، ترقيم، سلوفان، إضافات)
+            const extraM = norm.match(/(?:قص|اضافات|اضافه|تغليف|سلوفان|ترقيم|تكسير)\s*(\d+)/);
+            if (extraM) {
+                state.extraCost = parseFloat(extraM[1]);
+                state.extraName = 'قص / إضافات';
+                matchedAnything = true;
+            } else if (/بدون اضافات|الغي الاضافات/.test(norm)) {
+                state.extraCost = 0;
+                matchedAnything = true;
+            }
+
+            // 9. النسبة المئوية
+            if (/بدون نسبه|الغي النسبه|0\s*%/.test(norm)) {
+                state.profitPercent = 0; matchedAnything = true;
+            } else {
+                const pctM = norm.match(/(\d+)\s*%|نسبه\s*(\d+)/);
+                if (pctM) {
+                    state.profitPercent = parseFloat(pctM[1] || pctM[2]);
+                    matchedAnything = true;
+                }
+            }
+
+            return { matched: matchedAnything, state };
+        }
+
+        // =========================================================================
+        // 4-ب. محرك تعديل وإضافة الأسعار مباشرة بالكتابة أو الصوت داخل الشات
+        // =========================================================================
+        function tryHandlePriceCommandsInChat(rawText) {
+            const norm = normalizeSpokenArabic(rawText);
+
+            // تجاهل لو الرسالة عبارة عن طلب حساب دفاتر عادي
+            if (/\d+\s*(?:دفتر|دفاتر)/.test(norm) && !/خلي سعر|غير سعر|عدل سعر|ضف سعر|ضيف سعر/.test(norm)) {
+                return null;
+            }
+
+            const isPriceIntent = /(?:خلي|غير|عدل|سعر|ضف|ضيف|اضف|سجل)/.test(norm);
+            if (!isPriceIntent) return null;
+
+            // 1. تعديل سعر الزنكة
+            const zincM = norm.match(/(?:خلي|غير|عدل)?\s*(?:سعر)?\s*(?:الزنكه|زنكه)\s*(?:ب|الي|ل|يبقي|=)?\s*(\d+(?:\.\d+)?)/);
+            if (zincM && !/\d+\s*زنكه/.test(norm)) {
+                settings.zincPrice = parseFloat(zincM[1]);
+                saveState();
+                return `✅ تم تعديل وحفظ **سعر الزنكة الواحدة** ليصبح **${settings.zincPrice.toFixed(2)} جنيه** في النظام.`;
+            }
+
+            // 2. تعديل سعر التراج
+            const trajM = norm.match(/(?:خلي|غير|عدل)?\s*(?:سعر)?\s*(?:التراج|تراج)\s*(?:ب|الي|ل|يبقي|=)?\s*(\d+(?:\.\d+)?)/);
+            if (trajM && !/\d+\s*تراج/.test(norm)) {
+                settings.trajPrice = parseFloat(trajM[1]);
+                saveState();
+                return `✅ تم تعديل وحفظ **سعر التراج الواحد** ليصبح **${settings.trajPrice.toFixed(2)} جنيه** في النظام.`;
+            }
+
+            // 3. تعديل عدد ورق الدفتر الثابت
+            const sheetsM = norm.match(/(?:ورق الدفتر|عدد ورق الدفتر)\s*(?:ب|الي|ل|يبقي|=)?\s*(\d+)/);
+            if (sheetsM) {
+                settings.sheetsPerBook = parseInt(sheetsM[1], 10);
+                saveState();
+                return `✅ تم تعديل وحفظ **عدد ورق الدفتر الثابت** ليصبح **${settings.sheetsPerBook} ورقة**.`;
+            }
+
+            // 4. تعديل أو إضافة سعر الورق (مثلاً: "خلي سعر أصل وصورة 8.5" أو "خلي سعر أصل+2 ب 12")
+            const copiesTarget = extractPaperCopiesFromText(norm);
+            if (copiesTarget !== null && /(?:خلي|غير|عدل|سعر|ضف|ضيف)/.test(norm)) {
+                const afterPaper = norm.replace(/اصل\s*(?:\+|و)\s*(?:\d+|صوره|صورتين)/, ' ');
+                const priceM = afterPaper.match(/(?:ب|الي|ل|يبقي|سعره|سعر|=)?\s*(\d+(?:\.\d+)?)/);
+                if (priceM) {
+                    const newPrice = parseFloat(priceM[1]);
+                    const paperLabel = `أصل+${copiesTarget - 1}`;
+                    let foundId = null;
+                    for (const pid in papers) {
+                        if (papers[pid].copies === copiesTarget) {
+                            foundId = pid;
+                            break;
+                        }
+                    }
+                    if (foundId) {
+                        papers[foundId].price = newPrice;
+                    } else {
+                        papers['p_custom_' + Date.now()] = { name: paperLabel, price: newPrice, copies: copiesTarget };
+                    }
+                    saveState();
+                    return `✅ تم حفظ سعر الورق **(${paperLabel})** ليصبح **${newPrice.toFixed(2)} جنيه** للفرخ.`;
+                }
+            }
+
+            // 5. تعديل أو إضافة سعر تجليد لمقاس معين (مثلاً: "خلي تجليد 2 في التسعات ب 3 جنيه")
+            if (/تجليد/.test(norm)) {
+                const targetSize = extractFormulaFromText(norm);
+                if (targetSize) {
+                    const withoutSize = norm.replace(targetSize, ' ');
+                    const priceM = withoutSize.match(/(?:ب|الي|ل|يبقي|سعره|سعر|=)?\s*(\d+(?:\.\d+)?)/);
+                    if (priceM) {
+                        const newBindBase = parseFloat(priceM[1]);
+                        let foundBindId = null;
+                        for (const bid in bindings) {
+                            if (bindings[bid].name.trim() === targetSize.trim()) {
+                                foundBindId = bid;
+                                break;
+                            }
+                        }
+                        if (foundBindId) {
+                            bindings[foundBindId].basePrice = newBindBase;
+                        } else {
+                            bindings['b_' + Date.now()] = {
+                                name: targetSize,
+                                label: targetSize,
+                                basePrice: newBindBase,
+                                stepPrice: 0.25
+                            };
+                        }
+                        saveState();
+                        return `✅ تم تعديل وحفظ **سعر تجليد مقاس (${targetSize})** الأساسي (أصل+1) ليصبح **${newBindBase.toFixed(2)} جنيه** للدفتر.`;
+                    }
+                }
+            }
+
+            // 6. إضافة مقاس جديد كامل عبر الشات (مثلاً: "ضيف مقاس 5*11 معادلته 50/11 وفورمة 5 وتجليده 1.25")
+            if (/(?:ضف|ضيف|اضف)\s*مقاس/.test(norm)) {
+                const sizeM = norm.match(/مقاس\s*(?:جديد)?\s*([0-9*]+)/);
+                const expM = norm.match(/(\d+\s*\/\s*\d+)/);
+                const formM = norm.match(/فورمه\s*(\d+)/);
+                const bindM = norm.match(/تجليده?\s*(\d+(?:\.\d+)?)/);
+                if (sizeM) {
+                    const sName = sizeM[1].trim();
+                    const sExp = expM ? expM[1].replace(/\s+/g, ' ') : '50 / 11';
+                    const sForm = formM ? parseInt(formM[1], 10) : 1;
+                    const sBind = bindM ? parseFloat(bindM[1]) : 2.00;
+                    formulas[sName] = { exp: sExp, trajForm: sForm };
+                    bindings['b_' + Date.now()] = { name: sName, label: sName, basePrice: sBind, stepPrice: 0.25 };
+                    saveState();
+                    return `✅ تم إضافة وحفظ المقاس الجديد **(${sName})** بنجاح!\n• المعادلة: \`${sExp}\`\n• الفورمة: **${sForm}**\n• سعر التجليد الأساسي: **${sBind.toFixed(2)} ج**`;
+                }
+            }
+
+            return null;
+        }
+
+        function formatChatInvoiceReply(inv) {
+            return `تمام يا هندسة، حسبتلك شغلانة **${inv.numBooks} دفتر** مقاس **${inv.formula}** (**${inv.paperName}**) على **فورمة ${inv.unifiedForm}**:`;
+        }
+
+        // بناء كارت الفاتورة المرئي داخل الشات مع الإجمالي الكبير في المنتصف
+        function buildInvoiceCardHTML(inv) {
+            let extraBoxes = '';
+            if (inv.extraCost > 0) {
+                extraBoxes += `
+                    <div class="inv-stat-box">
+                        <div>
+                            <span class="inv-stat-label">➕ ${inv.extraName}</span>
+                            <span class="inv-stat-sub">إضافات</span>
+                        </div>
+                        <div class="inv-stat-val">${inv.extraCost.toFixed(2)} ج</div>
+                    </div>
+                `;
+            }
+            if (inv.profitPercent > 0) {
+                extraBoxes += `
+                    <div class="inv-stat-box">
+                        <div>
+                            <span class="inv-stat-label">📈 النسبة (${inv.profitPercent}%)</span>
+                            <span class="inv-stat-sub">قبل النسبة: ${inv.subTotal.toFixed(2)} ج</span>
+                        </div>
+                        <div class="inv-stat-val">+${inv.profitCost.toFixed(2)} ج</div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="chat-invoice-card">
+                    <div class="inv-header-badges">
+                        <span class="inv-badge">📘 ${inv.numBooks} دفتر</span>
+                        <span class="inv-badge">📐 مقاس: ${inv.formula}</span>
+                        <span class="inv-badge">📄 الورق: ${inv.paperName}</span>
+                        <span class="inv-badge">🔢 فورمة: ${inv.unifiedForm}</span>
+                    </div>
+
+                    <!-- الخانات العلوية (الورق + التراجات) -->
+                    <div class="inv-grid-boxes">
+                        <div class="inv-stat-box">
+                            <div>
+                                <span class="inv-stat-label">📄 حساب الورق</span>
+                                <span class="inv-stat-sub">${inv.finalPapers} فرخ × ${inv.paperPrice.toFixed(2)} ج (المعادلة: ${inv.suggestedPapers})</span>
+                            </div>
+                            <div class="inv-stat-val">${inv.paperCost.toFixed(2)} ج</div>
+                        </div>
+
+                        <div class="inv-stat-box">
+                            <div>
+                                <span class="inv-stat-label">⚙️ حساب التراجات</span>
+                                <span class="inv-stat-sub">${inv.trajCount} تراج (${inv.totalPulls} سحبة)</span>
+                            </div>
+                            <div class="inv-stat-val">${inv.trajCost.toFixed(2)} ج</div>
+                        </div>
+                    </div>
+
+                    <!-- الإجمالي النهائي واضح وكبير في وسط الخانات -->
+                    <div class="inv-center-total-box">
+                        <div class="inv-center-total-title">💰 الإجمالي النهائي للشغلانة</div>
+                        <div class="inv-center-total-number">${inv.grandTotal.toFixed(2)} <span style="font-size:1.15rem;">جنيه</span></div>
+                    </div>
+
+                    <!-- الخانات السفلية (الزنكات + التجليد + الإضافات) -->
+                    <div class="inv-grid-boxes">
+                        <div class="inv-stat-box">
+                            <div>
+                                <span class="inv-stat-label">💿 حساب الزنكات</span>
+                                <span class="inv-stat-sub">${inv.numZinc} زنكة × ${settings.zincPrice} ج</span>
+                            </div>
+                            <div class="inv-stat-val">${inv.zincCost.toFixed(2)} ج</div>
+                        </div>
+
+                        <div class="inv-stat-box">
+                            <div>
+                                <span class="inv-stat-label">📚 حساب التجليد</span>
+                                <span class="inv-stat-sub">${inv.numBooks} دفتر × ${inv.bindUnit.toFixed(2)} ج (${inv.bindLabel})</span>
+                            </div>
+                            <div class="inv-stat-val">${inv.bindCost.toFixed(2)} ج</div>
+                        </div>
+
+                        ${extraBoxes}
+                    </div>
+                </div>
+            `;
+        }
+
+        function computeBindingPrice(bindObj, copiesCount) {
+            if (!bindObj) return 0;
+            const base = parseFloat(bindObj.basePrice ?? bindObj.price) || 0;
+            const step = parseFloat(bindObj.stepPrice ?? 0.25);
+            const extraImages = Math.max(0, (copiesCount || 2) - 2);
+            return Math.round((base + extraImages * step) * 100) / 100;
+        }
+
+        function evaluatePaperFormula(expStr, numBooks, unifiedForm) {
+            const parts = expStr.split('/');
+            if (parts.length === 2) {
+                const sheets = parseFloat(parts[0].trim()) || 50;
+                const divisor = parseFloat(parts[1].trim()) || 1;
+                return ((sheets / divisor) * numBooks) / (unifiedForm || 1);
+            }
+            return ((50 / 11) * numBooks) / (unifiedForm || 1);
+        }
+
+        function calculateExactPrintingJob(state) {
+            const numBooks = parseFloat(state.numBooks) || 100;
+            const formulaName = (state.formula && formulas[state.formula]) ? state.formula : '30*20';
+            const fObj = formulas[formulaName];
+            const unifiedForm = parseInt(state.unifiedForm || fObj.trajForm || 1, 10);
+
+            let paperObj = papers['p1'];
+            for (const pid in papers) {
+                if (papers[pid].copies === (state.copies || 2)) {
+                    paperObj = papers[pid];
+                    break;
+                }
+            }
+
+            const copies = paperObj.copies;
+            const paperPrice = (state.customPaperPrice !== undefined && state.customPaperPrice !== null)
+                ? parseFloat(state.customPaperPrice)
+                : paperObj.price;
+
+            const rawPapers = evaluatePaperFormula(fObj.exp, numBooks, unifiedForm);
+            const suggestedPapers = Math.round(rawPapers * 100) / 100;
+            const finalPapers = (state.manualPapers !== undefined && state.manualPapers !== null)
+                ? parseFloat(state.manualPapers)
+                : Math.ceil(suggestedPapers);
+
+            const paperCost = finalPapers * paperPrice;
+
+            const pullsPerCopy = (settings.sheetsPerBook * numBooks) / unifiedForm;
+            const totalPulls = Math.round(pullsPerCopy * copies);
+            const trajCount = totalPulls > 0 ? Math.ceil(totalPulls / 1000) : 0;
+            const trajCost = trajCount * settings.trajPrice;
+
+            const numZinc = (state.numZinc !== undefined && state.numZinc !== null) ? parseFloat(state.numZinc) : 1;
+            const zincCost = numZinc * settings.zincPrice;
+
+            let bindUnit = 0;
+            let bindLabel = formulaName;
+            if (state.noBinding) {
+                bindUnit = 0;
+                bindLabel = 'بدون تجليد';
+            } else if (state.customBindUnit !== undefined && state.customBindUnit !== null) {
+                bindUnit = parseFloat(state.customBindUnit);
+                bindLabel = 'تجليد يدوي';
+            } else {
+                for (const bid in bindings) {
+                    if (bindings[bid].name.trim() === formulaName.trim()) {
+                        bindUnit = computeBindingPrice(bindings[bid], copies);
+                        bindLabel = bindings[bid].label || bindings[bid].name;
+                        break;
+                    }
+                }
+            }
+            const bindCost = numBooks * bindUnit;
+
+            const extraCost = parseFloat(state.extraCost) || 0;
+            const extraName = state.extraName || 'إضافات';
+            const subTotal = paperCost + trajCost + zincCost + bindCost + extraCost;
+            const profitPercent = parseFloat(state.profitPercent) || 0;
+            const profitCost = subTotal * (profitPercent / 100);
+            const grandTotal = subTotal + profitCost;
+
+            return {
+                projectName: state.projectName || `${numBooks} دفتر (${formulaName} ${paperObj.name})`,
+                numBooks,
+                formula: formulaName,
+                unifiedForm,
+                paperName: paperObj.name,
+                copies,
+                suggestedPapers,
+                finalPapers,
+                paperPrice,
+                paperCost,
+                totalPulls,
+                trajCount,
+                trajCost,
+                numZinc,
+                zincCost,
+                noBinding: !!state.noBinding,
+                bindLabel,
+                bindUnit,
+                bindCost,
+                extraName,
+                extraCost,
+                subTotal,
+                profitPercent,
+                profitCost,
+                grandTotal
+            };
+        }
+
+        // =========================================================================
+        // 5. إرسال الرسائل والرد الفوري في الشات
+        // =========================================================================
+        function renderActiveChatMessages() {
+            const session = getActiveSession();
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '';
+
+            session.messages.forEach((m, idx) => {
+                const item = document.createElement('div');
+                item.className = `msg-item ${m.role}`;
+
+                const avatar = document.createElement('div');
+                avatar.className = 'avatar-circle';
+                avatar.textContent = m.role === 'user' ? 'أنت' : 'DC';
+
+                const contentWrap = document.createElement('div');
+                contentWrap.className = 'msg-content-wrap';
+
+                const senderName = document.createElement('div');
+                senderName.className = 'msg-sender-name';
+                senderName.innerHTML = m.role === 'user' ? 'أنت' : '<span style="color:var(--gold-primary);">DARK CODE AI</span>';
+
+                const bubble = document.createElement('div');
+                bubble.className = 'msg-bubble';
+
+                const htmlText = (m.text || '')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--gold-bright);">$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em style="opacity:0.88;">$1</em>')
+                    .replace(/\n/g, '<br>');
+
+                bubble.innerHTML = htmlText;
+
+                // إذا كانت الرسالة تحتوي على فاتورة، نعرض كارت الفاتورة الاحترافي مع الإجمالي في وسط الخانات
+                if (m.invoice) {
+                    bubble.innerHTML += buildInvoiceCardHTML(m.invoice);
+                }
+
+                contentWrap.appendChild(senderName);
+                contentWrap.appendChild(bubble);
+
+                // أزرار سريعة تحت رد البوت (نسخ، واتساب، نطق صوتي)
+                if (m.role === 'bot') {
+                    const actionsRow = document.createElement('div');
+                    actionsRow.className = 'msg-actions-row';
+
+                    const copyBtn = document.createElement('button');
+                    copyBtn.className = 'msg-action-chip';
+                    copyBtn.innerHTML = '📋 نسخ الرد';
+                    copyBtn.onclick = () => copyReplyText(m.text);
+                    actionsRow.appendChild(copyBtn);
+
+                    const speakBtn = document.createElement('button');
+                    speakBtn.className = 'msg-action-chip';
+                    speakBtn.innerHTML = '🔊 استماع بالعربي';
+                    speakBtn.onclick = () => {
+                        if (m.invoice) {
+                            speakTextArabic(`إجمالي الحساب لـ ${m.invoice.numBooks} دفتر مقاس ${m.invoice.formula} هو ${Math.round(m.invoice.grandTotal)} جنيه`, true);
+                        } else {
+                            speakTextArabic(m.text, true);
+                        }
+                    };
+                    actionsRow.appendChild(speakBtn);
+
+                    if (m.invoice) {
+                        const waSumBtn = document.createElement('button');
+                        waSumBtn.className = 'msg-action-chip';
+                        waSumBtn.style.borderColor = 'rgba(34,197,94,0.4)';
+                        waSumBtn.style.color = '#4ade80';
+                        waSumBtn.innerHTML = '💬 واتساب (ملخص للعميل)';
+                        waSumBtn.onclick = () => shareInvoiceToWhatsApp(m.invoice, 'summary');
+                        actionsRow.appendChild(waSumBtn);
+
+                        const waDetBtn = document.createElement('button');
+                        waDetBtn.className = 'msg-action-chip';
+                        waDetBtn.style.borderColor = 'rgba(20,184,166,0.4)';
+                        waDetBtn.style.color = '#2dd4bf';
+                        waDetBtn.innerHTML = '📄 واتساب (بالتفصيل)';
+                        waDetBtn.onclick = () => shareInvoiceToWhatsApp(m.invoice, 'detailed');
+                        actionsRow.appendChild(waDetBtn);
+                    }
+
+                    contentWrap.appendChild(actionsRow);
+                }
+
+                item.appendChild(avatar);
+                item.appendChild(contentWrap);
+                container.appendChild(item);
+            });
+
+            const viewport = document.getElementById('messagesViewport');
+            viewport.scrollTop = viewport.scrollHeight;
+        }
+
+        function quickSend(text) {
+            const box = document.getElementById('chatInputBox');
+            box.value = text;
+            submitUserMessage();
+        }
+
+        function handleEnterKey(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitUserMessage();
+            }
+        }
+
+        function autoResizeTextarea(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 130) + 'px';
+        }
+
+        async function submitUserMessage() {
+            const box = document.getElementById('chatInputBox');
+            const text = box.value.trim();
+            if (!text) return;
+
+            box.value = '';
+            box.style.height = 'auto';
+
+            const session = getActiveSession();
+            session.messages.push({ role: 'user', text });
+            renderActiveChatMessages();
+
+            const norm = normalizeSpokenArabic(text);
+
+            // 1. هل يريد تسمية / حفظ المشروع الحالي؟
+            const renameMatch = text.match(/(?:سمي الشغلانه دي|سمي المشروع ده|سميه|احفظها باسم|باسم)\s+(.+)$/);
+            if (renameMatch && !/\d+\s*دفتر/.test(norm)) {
+                const newTitle = renameMatch[1].trim();
+                session.title = newTitle;
+                if (session.jobState) session.jobState.projectName = newTitle;
+                const botReply = `✅ تم حفظ وتسمية الشغلانة باسم **"${newTitle}"** في قائمتك الجانبية.`;
+                session.messages.push({ role: 'bot', text: botReply });
+                saveState();
+                renderSidebarSessions();
+                renderActiveChatMessages();
+                speakTextArabic(`تم حفظ المشروع باسم ${newTitle}`);
+                return;
+            }
+
+            // 2. هل يريد تعديل أو إضافة أي سعر بالكتابة أو الصوت داخل الشات؟
+            const priceCmdReply = tryHandlePriceCommandsInChat(text);
+            if (priceCmdReply) {
+                let fullReply = priceCmdReply;
+                let updatedInv = null;
+                if (session.jobState) {
+                    updatedInv = calculateExactPrintingJob(session.jobState);
+                    fullReply += `\n\n🔄 **تم تحديث حساب الشغلانة الحالية تلقائياً بالسعر الجديد:**`;
+                }
+                session.messages.push({ role: 'bot', text: fullReply, invoice: updatedInv });
+                saveState();
+                renderActiveChatMessages();
+                speakTextArabic(priceCmdReply.replace(/[*✅🔄]/g, ''));
+                return;
+            }
+
+            // 3. هل يسأل عن قائمة الأسعار؟
+            if (/الاسعار الحاليه|قائمه الاسعار|اسعار الورق|بكام الورق|اعرضلي قائمه الاسعار|الاسعار كلها/.test(norm)) {
+                const pLines = Object.values(papers).map(p => `• **${p.name}**: ${p.price.toFixed(2)} ج`).join('\n');
+                const bLines = Object.values(bindings).map(b => `• **مقاس ${b.name}**: أصل+1 بـ ${Number(b.basePrice).toFixed(2)} ج (+${Number(b.stepPrice || 0.25).toFixed(2)} ج لكل صورة)`).join('\n');
+                const reply = `📋 **قائمة الأسعار المحفوظة حالياً في DARK CODE:**\n\n` +
+                    `• 💿 **سعر الزنكة:** ${settings.zincPrice} جنيه\n` +
+                    `• ⚙️ **سعر التراج:** ${settings.trajPrice} جنيه\n` +
+                    `• 📘 **عدد ورق الدفتر:** ${settings.sheetsPerBook} ورقة\n\n` +
+                    `📄 **أسعار الورق (الأفرخ):**\n${pLines}\n\n` +
+                    `📚 **أسعار التجليد للمقاسات:**\n${bLines}\n\n` +
+                    `💡 *لتعديل أي سعر اكتبلي مثلاً: "خلي سعر الزنكة 70" أو "خلي سعر أصل وصورة 8" أو "خلي تجليد 2 في التسعات 3 جنيه".*`;
+                session.messages.push({ role: 'bot', text: reply });
+                saveState();
+                renderActiveChatMessages();
+                speakTextArabic(`سعر الزنكة ${settings.zincPrice} جنيه وسعر التراج ${settings.trajPrice} جنيه`);
+                return;
+            }
+
+            // 4. تحليل الشغلانة وحسابها فوراً
+            const parsed = parseJobFromConversation(text, session.jobState);
+            if (parsed.matched) {
+                session.jobState = parsed.state;
+                const inv = calculateExactPrintingJob(session.jobState);
+
+                // تحديث عنوان المحادثة في القائمة الجانبية تلقائياً
+                if (session.title.startsWith('شغلانة جديدة')) {
+                    session.title = `${inv.numBooks} دفتر ${inv.formula} (${inv.paperName})`;
+                }
+
+                const replyText = formatChatInvoiceReply(inv);
+                session.messages.push({
+                    role: 'bot',
+                    text: replyText,
+                    invoice: inv
+                });
+                saveState();
+                renderSidebarSessions();
+                renderActiveChatMessages();
+                speakTextArabic(`إجمالي الحساب لـ ${inv.numBooks} دفتر مقاس ${inv.formula} هو ${Math.round(inv.grandTotal)} جنيه`);
+                return;
+            }
+
+            // 5. إذا كان سؤالاً حوارياً عاماً، نرد بذكاء عبر Gemini API أو المساعد المدمج
+            const aiText = await askGeminiInChat(text, session);
+            session.messages.push({ role: 'bot', text: aiText });
+            saveState();
+            renderActiveChatMessages();
+            speakTextArabic(aiText.replace(/[*•#]/g, '').slice(0, 140));
+        }
+
+        async function askGeminiInChat(userPrompt, session) {
+            const lastJobInfo = session.jobState
+                ? `آخر شغلانة محسوبة في المحادثة: ${JSON.stringify(calculateExactPrintingJob(session.jobState))}`
+                : 'لم يتم حساب شغلانة بعد في هذه المحادثة.';
+
+            const sysPrompt = `أنت المساعد الذكي لموقع DARK CODE - BUSINESS SERVICES لحساب شغل المطابع والدفاتر في مصر.
+تحدث باللهجة المصرية الاحترافية والمختصرة.
+قاموس مصطلحات المطبعة المهم جداً:
+- كلمة "في" بين رقمين تعني علامة الضرب "*" (مثلاً: 2 في 9 تعني 2*9).
+- "التسعات" أو "التساعات" تعني رقم 9 (مثلاً: 2 في التسعات = 2*9، 3 في التسعات = 3*9، 4 في التسعات = 4*9، واحد في التسعات = 9).
+- "التمنيات" أو "الثمانيات" تعني رقم 8 (مثلاً: 2 في التمنيات = 2*8، 4 في التمنيات = 4*8، واحد في التمنيات = 8).
+- "الحداشرات" تعني 11 (مثلاً: 2 في الحداشرات = 2*11، 3 في الحداشرات = 3*11، 4 في الحداشرات = 4*11، واحد في الحداشرات = 30*20).
+- "أصل وصورة" = أصل+1 (نسختين)، "أصل وصورتين" = أصل+2 (3 نسخ)، "أصل و 3 صور" = أصل+3 (4 نسخ).
+الأسعار الحالية: الزنكة=${settings.zincPrice}ج، التراج=${settings.trajPrice}ج.
+${lastJobInfo}`;
+
+            const keysToTry = ["", document.getElementById('setApiKey').value.trim()];
+            for (const key of keysToTry) {
+                try {
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${key}`;
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: userPrompt }] }],
+                            systemInstruction: { parts: [{ text: sysPrompt }] }
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (reply) return reply;
+                    }
+                } catch (e) {}
+            }
+
+            return `معاك يا هندسة في **DARK CODE**! 👋\nقولي أو سجل بصوتك 🎙️ تفاصيل الشغلانة اللي عايز تحسبها، مثلاً:\n• **"100 دفتر 30*20 أصل وصورة"**\n• **"150 دفتر 4*11 أصل وصورتين و 2 زنكة"**\nوهطلعلك السعر النهائي وتفاصيل الورق والتراجات والتجليد في ثانية واحدة!`;
+        }
+
+        // =========================================================================
+        // 6. التسجيل الصوتي بالمايكروفون (Voice Input) + النطق الصوتي (TTS)
+        // =========================================================================
+        function setupVoiceRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return;
+
+            speechRec = new SpeechRecognition();
+            speechRec.lang = 'ar-EG';
+            speechRec.continuous = false;
+            speechRec.interimResults = true;
+
+            speechRec.onstart = () => {
+                isRecording = true;
+                document.getElementById('micRecordBtn').classList.add('recording');
+                document.getElementById('voiceBanner').classList.add('active');
+                document.getElementById('liveVoicePreview').textContent = '...';
+            };
+
+            speechRec.onresult = (event) => {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                document.getElementById('chatInputBox').value = transcript;
+                document.getElementById('liveVoicePreview').textContent = transcript;
+            };
+
+            speechRec.onerror = () => {
+                resetMicUI();
+            };
+
+            speechRec.onend = () => {
+                resetMicUI();
+                const spokenText = document.getElementById('chatInputBox').value.trim();
+                if (spokenText) {
+                    submitUserMessage();
+                }
+            };
+        }
+
+        function resetMicUI() {
+            isRecording = false;
+            document.getElementById('micRecordBtn').classList.remove('recording');
+            document.getElementById('voiceBanner').classList.remove('active');
+        }
+
+        function toggleVoiceRecording() {
+            if (!speechRec) {
+                showToast('⚠️ يرجى فتح الموقع من متصفح Chrome لتشغيل المايكروفون الصوتي', '#dc2626');
+                return;
+            }
+            if (isRecording) {
+                speechRec.stop();
+            } else {
+                try {
+                    if (window.speechSynthesis) window.speechSynthesis.cancel();
+                    speechRec.start();
+                } catch (e) {}
+            }
+        }
+
+        function stopVoiceRecording() {
+            if (speechRec && isRecording) {
+                speechRec.stop();
+            }
+        }
+
+        function toggleAutoSpeak() {
+            autoSpeak = !autoSpeak;
+            const btn = document.getElementById('voiceSpeakBtn');
+            btn.innerHTML = autoSpeak ? '🔊 الصوت: مفعل' : '🔇 الصوت: صامت';
+            if (!autoSpeak && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        function speakTextArabic(text, force = false) {
+            if ((!autoSpeak && !force) || !('speechSynthesis' in window)) return;
+            try {
+                window.speechSynthesis.cancel();
+                const clean = text
+                    .replace(/[*•#_`]/g, '')
+                    .replace(/(\d+)\*(\d+)/g, '$1 في $2')
+                    .replace(/أصل\+(\d+)/g, 'أصل و $1 صورة');
+                const utter = new SpeechSynthesisUtterance(clean);
+                utter.lang = 'ar-EG';
+                const voices = window.speechSynthesis.getVoices();
+                const arVoice = voices.find(v => v.lang.includes('ar-EG')) || voices.find(v => v.lang.startsWith('ar'));
+                if (arVoice) utter.voice = arVoice;
+                utter.rate = 1.02;
+                window.speechSynthesis.speak(utter);
+            } catch (e) {}
+        }
+
+        // =========================================================================
+        // 7. أدوات النسخ، مشاركة واتساب، الثيم، والإعدادات
+        // =========================================================================
+        function copyReplyText(rawText) {
+            const clean = rawText.replace(/\*\*/g, '').replace(/\*/g, '');
+            const temp = document.createElement('textarea');
+            temp.value = clean;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            showToast('📋 تم نسخ الحساب إلى الحافظة');
+        }
+
+        function shareInvoiceToWhatsApp(inv, mode) {
+            let msg = '';
+            if (mode === 'summary') {
+                msg = `*DARK CODE - BUSINESS SERVICES*\n` +
+                      `📘 *الكمية:* ${inv.numBooks} دفتر\n` +
+                      `📐 *المقاس:* ${inv.formula} (${inv.paperName})\n` +
+                      `━━━━━━━━━━━━━━\n` +
+                      `💰 *الإجمالي النهائي:* ${inv.grandTotal.toFixed(2)} جنيه`;
+            } else {
+                msg = `*DARK CODE - BUSINESS SERVICES*\n` +
+                      `📘 *الدفاتر:* ${inv.numBooks} دفتر | *المقاس:* ${inv.formula} (${inv.paperName})\n` +
+                      `🔢 *الفورمة:* ${inv.unifiedForm}\n` +
+                      `━━━━━━━━━━━━━━\n` +
+                      `📄 *الورق:* ${inv.finalPapers} فرخ × ${inv.paperPrice.toFixed(2)} ج = ${inv.paperCost.toFixed(2)} ج\n` +
+                      `⚙️ *التراجات:* ${inv.trajCount} تراج = ${inv.trajCost.toFixed(2)} ج\n` +
+                      `💿 *الزنكات:* ${inv.numZinc} زنكة = ${inv.zincCost.toFixed(2)} ج\n` +
+                      `📚 *التجليد (${inv.bindUnit.toFixed(2)} ج):* ${inv.bindCost.toFixed(2)} ج\n` +
+                      (inv.extraCost > 0 ? `➕ *${inv.extraName}:* ${inv.extraCost.toFixed(2)} ج\n` : '') +
+                      (inv.profitPercent > 0 ? `📈 *النسبة (${inv.profitPercent}%):* +${inv.profitCost.toFixed(2)} ج\n` : '') +
+                      `━━━━━━━━━━━━━━\n` +
+                      `💰 *الإجمالي النهائي:* ${inv.grandTotal.toFixed(2)} جنيه`;
+            }
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function toggleThemeMode() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('darkcode_theme', isLight ? 'light' : 'dark');
+            updateThemeButtonUI();
+        }
+
+        function updateThemeButtonUI() {
+            const isLight = document.body.classList.contains('light-mode');
+            document.getElementById('themeBtn').innerHTML = isLight ? '🌙 ليلي' : '☀️ نهاري';
+        }
+
+        function toggleMobileSidebar() {
+            document.getElementById('sidebarPanel').classList.toggle('open');
+        }
+
+        function uploadCustomLogo(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const dataUrl = e.target.result;
+                localStorage.setItem('darkcode_custom_logo', dataUrl);
+                const img = document.getElementById('brandLogoImg');
+                img.src = dataUrl;
+                img.style.display = 'block';
+                document.getElementById('fallbackGoldSvg').style.display = 'none';
+                showToast('✅ تم حفظ اللوجو بنجاح');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function openSettingsModal() {
+            document.getElementById('setZinc').value = settings.zincPrice;
+            document.getElementById('setTraj').value = settings.trajPrice;
+            document.getElementById('setSheets').value = settings.sheetsPerBook;
+            document.getElementById('settingsModal').style.display = 'flex';
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        function saveSettingsFromModal() {
+            const key = document.getElementById('setApiKey').value.trim();
+            localStorage.setItem('darkcode_api_key', key);
+            settings.zincPrice = parseFloat(document.getElementById('setZinc').value) || 65;
+            settings.trajPrice = parseFloat(document.getElementById('setTraj').value) || 100;
+            settings.sheetsPerBook = parseFloat(document.getElementById('setSheets').value) || 50;
+            saveState();
+            closeSettingsModal();
+            showToast('✅ تم حفظ الإعدادات بنجاح');
+        }
+
+        function factoryResetAll() {
+            settings = JSON.parse(JSON.stringify(defaultSettings));
+            papers   = JSON.parse(JSON.stringify(defaultPapers));
+            formulas = JSON.parse(JSON.stringify(defaultFormulas));
+            bindings = JSON.parse(JSON.stringify(defaultBindings));
+            saveState();
+            closeSettingsModal();
+            showToast('✅ تمت استعادة الأسعار الافتراضية');
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
