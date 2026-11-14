@@ -842,9 +842,15 @@
                     💡 <strong>معلومة سريعة:</strong> يمكنك تعديل أي سعر مباشرة من الشات! مثل: <em>"خلي سعر الزنكة 70"</em> أو <em>"خلي سعر التراج 120"</em>.
                 </div>
 
-                <div style="display:flex; gap:10px; margin-top:8px;">
+                <div style="background:rgba(239, 68, 68, 0.08); border:1px solid rgba(239, 68, 68, 0.3); padding:12px; border-radius:10px;">
+                    <div style="font-size:0.85rem; font-weight:800; color:#ef4444; margin-bottom:6px;">⚠️ منطقة الصيانة وإعادة ضبط الذاكرة (LocalStorage):</div>
+                    <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:8px; line-height:1.5;">زر مسح الذاكرة يحذف جميع الشغلانات المحفوظة ويعيد ضبط الموقع بالكامل للحالة الافتراضية.</p>
+                    <button type="button" onclick="clearLocalStorageWithWarning()" style="background:#dc2626; color:#fff; font-weight:800; padding:10px 14px; border-radius:8px; border:none; cursor:pointer; width:100%; font-size:0.88rem;">🗑️ مسح الذاكرة بالكامل (Local Storage Reset)</button>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:4px;">
                     <button type="button" onclick="saveSettingsFromModal()" style="flex:1; background:linear-gradient(135deg,#d4af37,#b45309); color:#000; font-weight:900; padding:11px; border-radius:10px; border:none; cursor:pointer;">💾 حفظ الإعدادات</button>
-                    <button type="button" onclick="factoryResetAll()" style="background:#dc2626; color:#fff; font-weight:700; padding:11px 14px; border-radius:10px; border:none; cursor:pointer;">إعادة ضبط المصنع</button>
+                    <button type="button" onclick="closeSettingsModal()" style="background:var(--bg-main); color:var(--text-primary); border:1px solid var(--border-color); font-weight:700; padding:11px 14px; border-radius:10px; cursor:pointer;">إلغاء</button>
                 </div>
             </div>
         </div>
@@ -1539,7 +1545,7 @@
         async function requestMicPermissionAndRecord() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                showToast('⚠️ متصفحك لا يدعم المايكروفون، يرجى استخدام Google Chrome الحديث', '#dc2626');
+                showToast('⚠️ متصفحك لا يدعم المايكروفون، يرجى استخدام Google Chrome', '#dc2626');
                 return;
             }
 
@@ -1548,14 +1554,13 @@
                 return;
             }
 
-            // طلب إذن المايكروفون رسمياً عبر navigator.mediaDevices أولاً ليظهر للسلطة في المتصفح
+            // فحص إذن المايكروفون المتوافق مع الهواتف عبر getUserMedia أولاً لفتح قفل المتصفح
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    // إيقاف الستريم فوراً لعدم احتكار الخط، فقط لجلب إذن المتصفح
                     stream.getTracks().forEach(track => track.stop());
                 } catch (err) {
-                    showToast('⚠️ يرجى السماح بالوصول للمايكروفون من إعدادات المتصفح', '#dc2626');
+                    showToast('⚠️ يرجى الضغط على علامة القفل (🔒) في شريط المتصفح والسماح بالوصول للمايكروفون', '#dc2626');
                     return;
                 }
             }
@@ -1587,7 +1592,7 @@
                 speechRec.onerror = (event) => {
                     resetMicUI();
                     if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                        showToast('⚠️ تم رفض الإذن، يرجى السماح للمايكروفون من قفل المتصفح', '#dc2626');
+                        showToast('⚠️ تم حظر المايكروفون من إعدادات المتصفح، يرجى تفعيله', '#dc2626');
                     }
                 };
 
@@ -1610,6 +1615,20 @@
             if (speechRec && isRecording) {
                 try { speechRec.stop(); } catch (e) { resetMicUI(); }
             }
+        }
+
+        function clearLocalStorageWithWarning() {
+            if (!confirm('⚠️ تنبيه خطير: هل أنت متأكد من مسح الذاكرة المحلية (Local Storage) بالكامل؟ سيتم حذف جميع الشغلانات المحفوظة وإعادة ضبط الإعدادات.')) return;
+            localStorage.clear();
+            settings = JSON.parse(JSON.stringify(defaultSettings));
+            papers = JSON.parse(JSON.stringify(defaultPapers));
+            formulas = JSON.parse(JSON.stringify(defaultFormulas));
+            bindings = JSON.parse(JSON.stringify(defaultBindings));
+            sessions = [];
+            saveState();
+            closeSettingsModal();
+            createNewChatSession();
+            showToast('🗑️ تم مسح الذاكرة المحلية واستعادة الإعدادات الافتراضية بنجاح');
         }
 
         function toggleAutoSpeak() {
