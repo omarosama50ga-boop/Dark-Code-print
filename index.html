@@ -585,6 +585,12 @@
             cursor: pointer;
             flex-shrink: 0;
             transition: 0.2s;
+            position: relative;
+        }
+
+        .mic-button:hover {
+            background: rgba(239, 68, 68, 0.22);
+            transform: scale(1.03);
         }
 
         .mic-button.recording {
@@ -631,18 +637,29 @@
             display: none;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
             background: rgba(239, 68, 68, 0.16);
-            border: 1px solid #ef4444;
+            border: 1.5px solid #ef4444;
             color: #fca5a5;
-            padding: 8px 14px;
-            border-radius: 12px;
-            margin-bottom: 8px;
+            padding: 10px 14px;
+            border-radius: 14px;
+            margin-bottom: 10px;
             font-size: 0.9rem;
             font-weight: 700;
         }
 
         .voice-status-banner.active {
             display: flex;
+        }
+
+        .voice-wave-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ef4444;
+            display: inline-block;
+            animation: blink 0.9s infinite;
         }
 
         .modal-backdrop {
@@ -661,7 +678,7 @@
             border: 1.5px solid var(--border-color);
             border-radius: 18px;
             width: 100%;
-            max-width: 580px;
+            max-width: 620px;
             max-height: 88vh;
             overflow-y: auto;
             padding: 20px;
@@ -670,13 +687,13 @@
 
         .form-input {
             width: 100%;
-            padding: 10px 12px;
+            padding: 9px 12px;
             border-radius: 10px;
             border: 1px solid var(--border-color);
             background: var(--bg-main);
             color: var(--text-primary);
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
         }
 
         #toastAlert {
@@ -686,13 +703,15 @@
             transform: translateX(-50%);
             background: #10b981;
             color: #fff;
-            padding: 10px 22px;
+            padding: 11px 22px;
             border-radius: 999px;
             font-weight: 800;
             font-size: 0.9rem;
-            z-index: 200;
+            z-index: 250;
             display: none;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.45);
+            text-align: center;
+            max-width: 92vw;
         }
     </style>
 </head>
@@ -729,7 +748,7 @@
                 <button type="button" class="icon-btn md:hidden" onclick="toggleMobileSidebar()" title="سجل المحادثات">
                     ☰
                 </button>
-                <div class="brand-box" onclick="document.getElementById('logoUploadInput').click()" title="اضغط لتغيير صورة اللوجو (1.jpg)">
+                <div class="brand-box" onclick="document.getElementById('logoUploadInput').click()" title="اضغط لتغيير صورة اللوجو">
                     <div class="logo-frame">
                         <img id="brandLogoImg" src="./1.jpg" alt="DC" onerror="this.style.display='none'; document.getElementById('fallbackGoldSvg').style.display='block';">
                         <svg id="fallbackGoldSvg" style="display:block; width:36px; height:36px;" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -782,11 +801,15 @@
             <div class="composer-inner">
                 <!-- إشعار التسجيل الصوتي الحي -->
                 <div class="voice-status-banner" id="voiceBanner">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <span>🎙️ جاري سماع صوتك الآن... تفضل بالتحدث:</span>
-                        <strong id="liveVoicePreview" style="color:#fff;"></strong>
+                    <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:200px;">
+                        <span class="voice-wave-dot"></span>
+                        <span>🎙️ مسجل الصوت نشط:</span>
+                        <strong id="liveVoicePreview" style="color:#fff; word-break:break-word;">تفضل بالتحدث الآن...</strong>
                     </div>
-                    <button type="button" onclick="stopVoiceRecording()" style="background:#ef4444; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">إيقاف وإرسال</button>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <button type="button" onclick="stopVoiceRecording(true)" style="background:#10b981; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-weight:800; cursor:pointer; font-size:0.82rem;">✅ إيقاف وإرسال</button>
+                        <button type="button" onclick="cancelVoiceRecording()" style="background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); padding:6px 10px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.82rem;">✕ إلغاء</button>
+                    </div>
                 </div>
 
                 <!-- أمثلة سريعة بضغطة واحدة -->
@@ -818,39 +841,56 @@
     <div class="modal-backdrop" id="settingsModal">
         <div class="modal-card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border-subtle); padding-bottom:10px;">
-                <h3 style="font-size:1.15rem; font-weight:900; color:var(--gold-primary);">⚙️ إعدادات DARK CODE</h3>
+                <h3 style="font-size:1.15rem; font-weight:900; color:var(--gold-primary);">⚙️ إعدادات الأسعار والنظام - DARK CODE</h3>
                 <button type="button" onclick="closeSettingsModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.3rem; cursor:pointer;">✕</button>
             </div>
 
             <div style="display:flex; flex-direction:column; gap:14px;">
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
-                    <div>
-                        <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary);">سعر الزنكة (ج):</label>
-                        <input type="number" id="setZinc" class="form-input" value="65">
+                <!-- الأسعار الأساسية -->
+                <div>
+                    <div style="font-size:0.88rem; font-weight:800; color:var(--gold-bright); margin-bottom:8px;">📌 الأسعار الأساسية للمطبعة:</div>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+                        <div>
+                            <label style="font-size:0.8rem; font-weight:700; color:var(--text-secondary);">سعر الزنكة (ج):</label>
+                            <input type="number" step="0.5" id="setZinc" class="form-input" value="65">
+                        </div>
+                        <div>
+                            <label style="font-size:0.8rem; font-weight:700; color:var(--text-secondary);">سعر التراج (ج):</label>
+                            <input type="number" step="1" id="setTraj" class="form-input" value="100">
+                        </div>
+                        <div>
+                            <label style="font-size:0.8rem; font-weight:700; color:var(--text-secondary);">ورق الدفتر:</label>
+                            <input type="number" step="1" id="setSheets" class="form-input" value="50">
+                        </div>
                     </div>
-                    <div>
-                        <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary);">سعر التراج (ج):</label>
-                        <input type="number" id="setTraj" class="form-input" value="100">
-                    </div>
-                    <div>
-                        <label style="font-size:0.82rem; font-weight:700; color:var(--text-secondary);">ورق الدفتر:</label>
-                        <input type="number" id="setSheets" class="form-input" value="50">
-                    </div>
+                </div>
+
+                <!-- أسعار الورق الكربون -->
+                <div>
+                    <div style="font-size:0.88rem; font-weight:800; color:var(--gold-bright); margin-bottom:8px;">📄 أسعار الفرخ المكربن (أصل + صورة):</div>
+                    <div id="settingsPapersGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap:8px;"></div>
                 </div>
 
                 <div style="background:rgba(212,175,55,0.08); border:1px solid var(--border-color); padding:10px 12px; border-radius:10px; font-size:0.84rem; line-height:1.6;">
-                    💡 <strong>معلومة سريعة:</strong> يمكنك تعديل أي سعر مباشرة من الشات! مثل: <em>"خلي سعر الزنكة 70"</em> أو <em>"خلي سعر التراج 120"</em>.
+                    💡 <strong>أوامر ذكية سريعة من الشات مباشرة:</strong><br>
+                    • <em>"خلي سعر الزنكة 70"</em> أو <em>"خلي سعر التراج 120"</em><br>
+                    • <em>"ضف 50 جنيه سلوفان"</em> أو <em>"نسبة ربح 15%"</em> أو <em>"خلي التجليد 3 جنيه"</em>
                 </div>
 
+                <!-- منطقة الصيانة وإعادة الضبط بدون نوافذ متصفح منبثقة -->
                 <div style="background:rgba(239, 68, 68, 0.08); border:1px solid rgba(239, 68, 68, 0.3); padding:12px; border-radius:10px;">
                     <div style="font-size:0.85rem; font-weight:800; color:#ef4444; margin-bottom:6px;">⚠️ منطقة الصيانة وإعادة ضبط الذاكرة (LocalStorage):</div>
-                    <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:8px; line-height:1.5;">زر مسح الذاكرة يحذف جميع الشغلانات المحفوظة ويعيد ضبط الموقع بالكامل للحالة الافتراضية.</p>
-                    <button type="button" onclick="clearLocalStorageWithWarning()" style="background:#dc2626; color:#fff; font-weight:800; padding:10px 14px; border-radius:8px; border:none; cursor:pointer; width:100%; font-size:0.88rem;">🗑️ مسح الذاكرة بالكامل (Local Storage Reset)</button>
+                    <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:8px; line-height:1.5;">يحذف جميع الشغلانات المحفوظة ويعيد ضبط الأسعار للحالة الافتراضية.</p>
+                    <button type="button" id="resetInitBtn" onclick="showResetConfirmUI()" style="background:#dc2626; color:#fff; font-weight:800; padding:10px 14px; border-radius:8px; border:none; cursor:pointer; width:100%; font-size:0.88rem;">🗑️ مسح الذاكرة بالكامل (Local Storage Reset)</button>
+                    <div id="resetConfirmBox" style="display:none; margin-top:8px; gap:8px; align-items:center;">
+                        <button type="button" onclick="executeLocalStorageReset()" style="flex:1; background:#ef4444; color:#fff; font-weight:900; padding:9px; border-radius:8px; border:none; cursor:pointer; font-size:0.84rem;">⚠️ نعم، امسح كل شيء الآن</button>
+                        <button type="button" onclick="hideResetConfirmUI()" style="padding:9px 14px; background:var(--bg-main); color:var(--text-primary); border:1px solid var(--border-color); border-radius:8px; font-weight:700; cursor:pointer; font-size:0.84rem;">تراجع</button>
+                    </div>
                 </div>
 
                 <div style="display:flex; gap:10px; margin-top:4px;">
-                    <button type="button" onclick="saveSettingsFromModal()" style="flex:1; background:linear-gradient(135deg,#d4af37,#b45309); color:#000; font-weight:900; padding:11px; border-radius:10px; border:none; cursor:pointer;">💾 حفظ الإعدادات</button>
-                    <button type="button" onclick="closeSettingsModal()" style="background:var(--bg-main); color:var(--text-primary); border:1px solid var(--border-color); font-weight:700; padding:11px 14px; border-radius:10px; cursor:pointer;">إلغاء</button>
+                    <button type="button" onclick="saveSettingsFromModal()" style="flex:1; background:linear-gradient(135deg,#d4af37,#b45309); color:#000; font-weight:900; padding:11px; border-radius:10px; border:none; cursor:pointer;">💾 حفظ جميع الإعدادات</button>
+                    <button type="button" onclick="closeSettingsModal()" style="background:var(--bg-main); color:var(--text-primary); border:1px solid var(--border-color); font-weight:700; padding:11px 14px; border-radius:10px; cursor:pointer;">إغلاق</button>
                 </div>
             </div>
         </div>
@@ -926,15 +966,24 @@
         let sessions = [];
         let activeSessionId = null;
         let autoSpeak = false;
+
+        // متغيرات الميكروفون والتعرف الصوتي المحسنة
         let speechRec = null;
         let isRecording = false;
+        let voiceFinalTranscript = '';
+        let voiceInterimTranscript = '';
+        let voiceCanceled = false;
+        let voiceAutoSubmitOnEnd = true;
+        let toastTimer = null;
 
-        function showToast(text, color = '#10b981') {
+        function showToast(text, color = '#10b981', duration = 3000) {
             const el = document.getElementById('toastAlert');
+            if (!el) return;
             el.textContent = text;
             el.style.background = color;
             el.style.display = 'block';
-            setTimeout(() => { el.style.display = 'none'; }, 2500);
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { el.style.display = 'none'; }, duration);
         }
 
         function initApp() {
@@ -950,18 +999,25 @@
                 img.style.display = 'block';
                 document.getElementById('fallbackGoldSvg').style.display = 'none';
             } else {
-                // إذا لم يتم رفع صورة، يتم إخفاء الـ img لتجنب خطأ 404 وتفعيل شعار الـ SVG الفخم
                 const img = document.getElementById('brandLogoImg');
                 if (img) img.style.display = 'none';
                 const svg = document.getElementById('fallbackGoldSvg');
                 if (svg) svg.style.display = 'block';
             }
 
-            settings = JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_settings')) || JSON.parse(JSON.stringify(defaultSettings));
-            papers   = JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_papers'))   || JSON.parse(JSON.stringify(defaultPapers));
-            formulas = Object.assign({}, defaultFormulas, JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_formulas')) || {});
-            bindings = Object.assign({}, defaultBindings, JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_bindings')) || {});
-            sessions = JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_sessions')) || [];
+            try {
+                settings = JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_settings')) || JSON.parse(JSON.stringify(defaultSettings));
+                papers   = JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_papers'))   || JSON.parse(JSON.stringify(defaultPapers));
+                formulas = Object.assign({}, defaultFormulas, JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_formulas')) || {});
+                bindings = Object.assign({}, defaultBindings, JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_bindings')) || {});
+                sessions = JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_sessions')) || [];
+            } catch (e) {
+                settings = JSON.parse(JSON.stringify(defaultSettings));
+                papers   = JSON.parse(JSON.stringify(defaultPapers));
+                formulas = JSON.parse(JSON.stringify(defaultFormulas));
+                bindings = JSON.parse(JSON.stringify(defaultBindings));
+                sessions = [];
+            }
 
             if (sessions.length === 0) {
                 createNewChatSession();
@@ -973,11 +1029,15 @@
         }
 
         function saveState() {
-            localStorage.setItem(STORAGE_PREFIX + '_settings', JSON.stringify(settings));
-            localStorage.setItem(STORAGE_PREFIX + '_papers', JSON.stringify(papers));
-            localStorage.setItem(STORAGE_PREFIX + '_formulas', JSON.stringify(formulas));
-            localStorage.setItem(STORAGE_PREFIX + '_bindings', JSON.stringify(bindings));
-            localStorage.setItem(STORAGE_PREFIX + '_sessions', JSON.stringify(sessions));
+            try {
+                localStorage.setItem(STORAGE_PREFIX + '_settings', JSON.stringify(settings));
+                localStorage.setItem(STORAGE_PREFIX + '_papers', JSON.stringify(papers));
+                localStorage.setItem(STORAGE_PREFIX + '_formulas', JSON.stringify(formulas));
+                localStorage.setItem(STORAGE_PREFIX + '_bindings', JSON.stringify(bindings));
+                localStorage.setItem(STORAGE_PREFIX + '_sessions', JSON.stringify(sessions));
+            } catch (e) {
+                console.warn('Storage save error:', e);
+            }
         }
 
         function defaultJobState() {
@@ -988,6 +1048,8 @@
                 copies: 2,
                 numZinc: 1,
                 noBinding: false,
+                customBindUnit: null,
+                manualPapers: null,
                 extraCost: 0,
                 extraName: 'إضافات',
                 profitPercent: 0
@@ -1131,7 +1193,7 @@
                                 <div class="inv-stat-box">
                                     <div>
                                         <div class="inv-stat-label">➕ ${inv.extraName}</div>
-                                        <span class="inv-stat-sub">إضافات يدوية</span>
+                                        <span class="inv-stat-sub">إضافات خاصة</span>
                                     </div>
                                     <div class="inv-stat-val">${inv.extraCost.toFixed(2)} ج</div>
                                 </div>
@@ -1167,8 +1229,8 @@
                 const invoiceHTML = (!isUser && msg.invoice) ? buildInvoiceCardHTML(msg.invoice) : '';
                 const actionsHTML = (!isUser && msg.invoice) ? `
                     <div class="msg-actions-row">
-                        <button type="button" class="msg-action-chip" onclick='shareInvoiceToWhatsApp(${JSON.stringify(msg.invoice)}, "summary")'>💬 واتساب (ملخص)</button>
-                        <button type="button" class="msg-action-chip" onclick='shareInvoiceToWhatsApp(${JSON.stringify(msg.invoice)}, "detailed")'>📋 واتساب (بالتفصيل)</button>
+                        <button type="button" class="msg-action-chip" onclick="shareInvoiceByIndex(${idx}, 'summary')">💬 واتساب (ملخص)</button>
+                        <button type="button" class="msg-action-chip" onclick="shareInvoiceByIndex(${idx}, 'detailed')">📋 واتساب (بالتفصيل)</button>
                         <button type="button" class="msg-action-chip" onclick="speakTextArabic('إجمالي الشغلانة ${Math.round(msg.invoice.grandTotal)} جنيه', true)">🔊 نطق السعر</button>
                         <button type="button" class="msg-action-chip" onclick="copyMessageByIndex(${idx})">📄 نسخ</button>
                     </div>
@@ -1196,10 +1258,25 @@
             setTimeout(() => { viewport.scrollTop = viewport.scrollHeight; }, 30);
         }
 
+        function shareInvoiceByIndex(idx, mode) {
+            const session = getActiveSession();
+            const msg = session?.messages?.[idx];
+            if (msg && msg.invoice) {
+                shareInvoiceToWhatsApp(msg.invoice, mode);
+            }
+        }
+
         function copyMessageByIndex(idx) {
             const session = getActiveSession();
             const msg = session?.messages?.[idx];
-            if (msg) copyReplyText(msg.text);
+            if (!msg) return;
+            if (msg.invoice) {
+                const inv = msg.invoice;
+                const fullText = `${msg.text}\n📘 عدد الدفاتر: ${inv.numBooks} دفتر\n📐 المقاس: ${inv.formula} (${inv.paperName})\n📄 الورق: ${inv.paperCost.toFixed(2)} ج\n⚙️ التراجات: ${inv.trajCost.toFixed(2)} ج\n💿 الزنكات: ${inv.zincCost.toFixed(2)} ج\n📚 التجليد: ${inv.bindCost.toFixed(2)} ج\n💰 الإجمالي النهائي: ${inv.grandTotal.toFixed(2)} جنيه`;
+                copyReplyText(fullText);
+            } else {
+                copyReplyText(msg.text);
+            }
         }
 
         function speakMessageByIndex(idx) {
@@ -1209,7 +1286,8 @@
         }
 
         function quickSend(text) {
-            document.getElementById('chatInputBox').value = text;
+            const input = document.getElementById('chatInputBox');
+            input.value = text;
             submitUserMessage();
         }
 
@@ -1252,11 +1330,11 @@
                 const clean = String(expStr).trim();
                 const parts = clean.split('/');
                 if (parts.length === 2) {
-                    const num = parseFloat(parts[0]) || settings.sheetsPerBook || 50;
+                    const num = parseFloat(settings.sheetsPerBook) || parseFloat(parts[0]) || 50;
                     const den = parseFloat(parts[1]) || 11;
                     return ((num / den) * numBooks) / (unifiedForm || 1);
                 }
-                return (eval(clean) * numBooks) / (unifiedForm || 1);
+                return ((50 / 11) * numBooks) / (unifiedForm || 1);
             } catch (e) {
                 return ((50 / 11) * numBooks) / (unifiedForm || 1);
             }
@@ -1281,7 +1359,7 @@
 
             const paperCost = finalPapers * paperPrice;
 
-            const pullsPerCopy = ((settings.sheetsPerBook || 50) * numBooks) / unifiedForm;
+            const pullsPerCopy = ((parseFloat(settings.sheetsPerBook) || 50) * numBooks) / unifiedForm;
             const totalPulls = Math.round(pullsPerCopy * copies);
             const trajCount = totalPulls > 0 ? Math.ceil(totalPulls / 1000) : 0;
             const trajCost = trajCount * (parseFloat(settings.trajPrice) || 100);
@@ -1326,7 +1404,7 @@
             const wordNumbers = [
                 { reg: /(?:^|\s)الفين(?:\s|$)/g, val: ' 2000 ' },
                 { reg: /(?:^|\s)الف(?:\s|$)/g, val: ' 1000 ' },
-                { reg: /(?:^|\s)(?:خمسميه|خمسمايه|خمسمائة|خمسميت)(?:\s|$)/g, val: ' 500 ' },
+                { reg: /(?:^|\s)(?:خمسميه|خمسمايه|خمسمائه|خمسميت)(?:\s|$)/g, val: ' 500 ' },
                 { reg: /(?:^|\s)(?:ربعميه|ربعمايه|اربعمائه|ربعميت)(?:\s|$)/g, val: ' 400 ' },
                 { reg: /(?:^|\s)(?:تلتميه|تلتمايه|ثلاثمائه|تلتميت)(?:\s|$)/g, val: ' 300 ' },
                 { reg: /(?:^|\s)(?:ميتين|مائتين)(?:\s|$)/g, val: ' 200 ' },
@@ -1353,19 +1431,20 @@
                 { reg: /(?:^|\s)حداشر(?:\s|$)/g, val: ' 11 ' },
                 { reg: /(?:^|\s)عشره(?:\s|$)/g, val: ' 10 ' },
                 { reg: /(?:^|\s)تسعه(?:\s|$)/g, val: ' 9 ' },
-                { reg: /(?:^|\s)تمانيه(?:\s|$)/g, val: ' 8 ' },
+                { reg: /(?:^|\s)(?:تمانيه|ثمانيه)(?:\s|$)/g, val: ' 8 ' },
                 { reg: /(?:^|\s)سبعه(?:\s|$)/g, val: ' 7 ' },
                 { reg: /(?:^|\s)سته(?:\s|$)/g, val: ' 6 ' },
                 { reg: /(?:^|\s)خمسه(?:\s|$)/g, val: ' 5 ' },
                 { reg: /(?:^|\s)اربعه(?:\s|$)/g, val: ' 4 ' },
-                { reg: /(?:^|\s)ثلاثه(?:\s|$)/g, val: ' 3 ' },
-                { reg: /(?:^|\s)اتنين(?:\s|$)/g, val: ' 2 ' },
+                { reg: /(?:^|\s)(?:ثلاثه|تلاته)(?:\s|$)/g, val: ' 3 ' },
+                { reg: /(?:^|\s)(?:اتنين|اثنين)(?:\s|$)/g, val: ' 2 ' },
                 { reg: /(?:^|\s)واحد(?:\s|$)/g, val: ' 1 ' }
             ];
             wordNumbers.forEach(w => { s = s.replace(w.reg, w.val); });
 
+            // تصحيح تحويل مصطلحات المقاسات بالعامية المصرية (التسعات، التمنيات، الحداشرات، A4)
             s = s.replace(/(?:ال)?(?:ايه|اي|a)\s*(?:فور|4)/gi, ' A4 ');
-            s = s.replace(/(?:ال)?(?:تساعات)/g, ' 9 ');
+            s = s.replace(/(?:ال)?(?:تسعات|تساعات)/g, ' 9 ');
             s = s.replace(/(?:ال)?(?:تمنيات|ثمانيات)/g, ' 8 ');
             s = s.replace(/(?:ال)?(?:حداشرات)/g, ' 11 ');
             s = s.replace(/(?:في|فى|\*)\s*ال\s*(\d+|A4)/gi, ' * $1 ');
@@ -1377,7 +1456,8 @@
         }
 
         function extractPaperCopiesFromText(normText) {
-            if (/اصل\s*و\s*صورتين|اصل\s*وصورتين|اصل\s*\+\s*2/.test(normText)) return 3;
+            if (/اصل\s*و\s*ثلاث\s*صور|اصل\s*و\s*3\s*صور|اصل\s*\+\s*3/.test(normText)) return 4;
+            if (/اصل\s*و\s*صورتين|اصل\s*وصورتين|اصل\s*و\s*2\s*صوره|اصل\s*\+\s*2/.test(normText)) return 3;
             if (/اصل\s*و\s*صوره|اصل\s*وصوره|اصل\s*\+\s*1/.test(normText)) return 2;
             const m = normText.match(/اصل\s*(?:\+|و)\s*(\d+)/);
             if (m) {
@@ -1411,6 +1491,7 @@
                 state.formula = size;
                 state.unifiedForm = formulas[size]?.trajForm || 1;
                 state.manualPapers = null;
+                state.customBindUnit = null;
                 matched = true;
             }
 
@@ -1420,30 +1501,88 @@
                 state.numBooks = parseInt(bookMatch[1], 10);
                 state.manualPapers = null;
                 matched = true;
-            } else if (prevJobState && /(?:خليهم|يبقوا|لو|اعملهم|طيب لو)\s*(\d+)/.test(cleaned) && !/زنك|تراج|نسبه|%|ورق|سعر/.test(cleaned)) {
-                const m = cleaned.match(/(?:خليهم|يبقوا|لو|اعملهم|طيب لو)\s*(\d+)/);
+            } else if (prevJobState && /(?:خليهم|خليناهم|يبقوا|لو|اعملهم|طيب لو)\s*(\d+)/.test(cleaned) && !/زنك|تراج|نسبه|%|ورق|سعر|فرخ/.test(cleaned)) {
+                const m = cleaned.match(/(?:خليهم|خليناهم|يبقوا|لو|اعملهم|طيب لو)\s*(\d+)/);
                 state.numBooks = parseInt(m[1], 10);
                 state.manualPapers = null;
                 matched = true;
             }
 
             const copies = extractPaperCopiesFromText(norm);
-            if (copies !== null) { state.copies = copies; matched = true; }
+            if (copies !== null) {
+                state.copies = copies;
+                matched = true;
+            }
 
             const formMatch = norm.match(/فورمه\s*(\d+)/);
             if (formMatch) {
                 const fn = parseInt(formMatch[1], 10);
-                if (fn >= 1 && fn <= 4) { state.unifiedForm = fn; state.manualPapers = null; matched = true; }
+                if (fn >= 1 && fn <= 4) {
+                    state.unifiedForm = fn;
+                    state.manualPapers = null;
+                    matched = true;
+                }
             }
 
-            if (/بدون زنك|من غير زنك/.test(norm)) { state.numZinc = 0; matched = true; }
-            else {
+            // عدد الأفرخ اليدوي
+            const manualPaperMatch = norm.match(/(?:خلي\s*الورق|عدد\s*الورق|الورق)\s*(\d+)\s*فرخ/);
+            if (manualPaperMatch) {
+                state.manualPapers = parseFloat(manualPaperMatch[1]);
+                matched = true;
+            }
+
+            // الزنكات
+            if (/بدون زنك|من غير زنك/.test(norm)) {
+                state.numZinc = 0;
+                matched = true;
+            } else {
                 const zMatch = norm.match(/(\d+)\s*(?:زنكه|زنكات|زنك|لون|الوان)/);
-                if (zMatch) { state.numZinc = parseInt(zMatch[1], 10); matched = true; }
+                if (zMatch && !/سعر/.test(norm)) {
+                    state.numZinc = parseInt(zMatch[1], 10);
+                    matched = true;
+                } else if (/(?:زنكه\s*واحده|1\s*زنكه)/.test(norm)) {
+                    state.numZinc = 1;
+                    matched = true;
+                } else if (/زنكتين/.test(norm)) {
+                    state.numZinc = 2;
+                    matched = true;
+                }
             }
 
-            if (/بدون تجليد|من غير تجليد/.test(norm)) { state.noBinding = true; matched = true; }
-            else if (/بتجليد|رجع التجليد/.test(norm)) { state.noBinding = false; matched = true; }
+            // التجليد
+            if (/بدون تجليد|من غير تجليد|بلا تجليد/.test(norm)) {
+                state.noBinding = true;
+                matched = true;
+            } else if (/بتجليد|رجع التجليد/.test(norm)) {
+                state.noBinding = false;
+                matched = true;
+            } else {
+                const customBindM = norm.match(/(?:خلي\s*التجليد|سعر\s*التجليد|التجليد\s*ب)\s*(\d+(?:\.\d+)?)/);
+                if (customBindM) {
+                    state.noBinding = false;
+                    state.customBindUnit = parseFloat(customBindM[1]);
+                    matched = true;
+                }
+            }
+
+            // نسبة الربح
+            const profitM = norm.match(/(?:نسبه\s*ربح|ربح|مكسب|نسبه)\s*(\d+(?:\.\d+)?)\s*(?:%|في\s*الميه)?/);
+            if (profitM) {
+                state.profitPercent = parseFloat(profitM[1]);
+                matched = true;
+            } else if (/بدون\s*ربح|الغاء\s*الربح/.test(norm)) {
+                state.profitPercent = 0;
+                matched = true;
+            }
+
+            // إضافات خاصة (مثل سلوفان، تكسير، ترقيم...)
+            const extraM = norm.match(/(?:اضافه|زود|ضف|حط)\s*(\d+(?:\.\d+)?)\s*(?:جنيه|ج)?\s*(.*)?/);
+            if (extraM && !/دفتر|زنك|تراج/.test(extraM[0])) {
+                state.extraCost = parseFloat(extraM[1]);
+                const customLabel = (extraM[2] || '').trim();
+                if (customLabel) state.extraName = customLabel;
+                matched = true;
+            }
 
             return { matched, state };
         }
@@ -1451,10 +1590,15 @@
         function checkPriceOrGeneralCommand(text) {
             const norm = normalizeSpokenArabic(text);
 
+            // استشارة المطابع والأسئلة الفنية (مثل الفرق بين مقاس التسعات و A4)
+            if (/الفرق بين.*(?:9|التسعات).*A4|استشاره مطابع|مقاسات الورق|يعني ايه فورمه|يعني ايه تراج/i.test(norm) || /الفرق بين مقاس التسعات/.test(text)) {
+                return `🧠 **استشارة مطابع فنية من DARK CODE:**\n\n• **مقاس التسعات (9 ومشتقاته 2×9 و3×9 و4×9):** يعتمد على تقسيم الفرخ الأساسي على **9** (مقاس الدفتر الكامل حوالي 23×33 سم، والـ 2×9 مقاسه 16.5×23 سم)، وهو ممتاز للفواتير والإيصالات التجارية ويوفر في الهالك.\n• **مقاس الـ A4 ومشتقاته (2×A4 و3×A4 و4×A4):** يعتمد على المقاس الإداري القياسي (21×29.7 سم)، ويُفضل في دفاتر الشركات الرسمية وعقود الصيانة.\n• **الفورمة والتراج:** الفورمة هي عدد الدفاتر التي تُطبع في السحبة الواحدة على الزنكة لتقليل عدد السحبات والتراجات (كل 1000 سحبة تُحسب تراج).\n\n💡 *قولي تحب نحسب شغلانة على مقاس التسعات ولا الاي 4؟*`;
+            }
+
             if (/الاسعار الحاليه|قائمه الاسعار|اسعار الورق|اعرضلي قائمه الاسعار/.test(norm)) {
                 const pLines = Object.values(papers).map(p => `• **${p.name}**: ${p.price.toFixed(2)} ج`).join('\n');
                 const bLines = Object.values(bindings).map(b => `• **مقاس ${b.name}**: أصل+1 بـ ${Number(b.basePrice).toFixed(2)} ج`).join('\n');
-                return `📋 **قائمة الأسعار المحفوظة في DARK CODE:**\n\n• 💿 **سعر الزنكة:** ${settings.zincPrice} ج\n• ⚙️ **سعر التراج:** ${settings.trajPrice} ج\n• 📘 **ورق الدفتر:** ${settings.sheetsPerBook} ورقة\n\n📄 **الورق:**\n${pLines}\n\n📚 **التجليد:**\n${bLines}`;
+                return `📋 **قائمة الأسعار المحفوظة في DARK CODE:**\n\n• 💿 **سعر الزنكة:** ${settings.zincPrice} ج\n• ⚙️ **سعر التراج:** ${settings.trajPrice} ج\n• 📘 **ورق الدفتر:** ${settings.sheetsPerBook} ورقة\n\n📄 **الورق المكربن:**\n${pLines}\n\n📚 **التجليد:**\n${bLines}`;
             }
 
             const renameM = text.match(/(?:سمي الشغلانه دي|سمي المشروع ده|سميه|باسم)\s+(.+)$/);
@@ -1480,7 +1624,7 @@
                 return `✅ تم تعديل سعر التراج ليصبح **${settings.trajPrice} جنيه**.`;
             }
 
-            if (/السلام عليكم|ازيك|عامل ايه|صباح الخير|مساء الخير|مين معاك/.test(norm)) {
+            if (/السلام عليكم|ازيك|عامل ايه|صباح الخير|مساء الخير|مين معاك|مرحبا/.test(norm)) {
                 return `وعليكم السلام يا هندسة! أهلاً بيك في **DARK CODE**. أنا مساعدك الذكي لحسابات المطابع ومشاريعك جاهز في أي وقت. قولي الشغلانة كام دفتر ومقاس إيه؟`;
             }
 
@@ -1500,7 +1644,7 @@
             renderActiveChatMessages();
             document.getElementById('typingIndicator').style.display = 'block';
 
-            await new Promise(r => setTimeout(r, 400));
+            await new Promise(r => setTimeout(r, 320));
             document.getElementById('typingIndicator').style.display = 'none';
 
             const generalReply = checkPriceOrGeneralCommand(text);
@@ -1512,7 +1656,7 @@
                 session.messages.push({ role: 'bot', text: generalReply, invoice: updatedInv });
                 saveState();
                 renderActiveChatMessages();
-                speakTextArabic(generalReply.replace(/[*✅]/g, ''));
+                speakTextArabic(generalReply.replace(/[*✅🧠📋•]/g, ''));
                 return;
             }
 
@@ -1535,83 +1679,169 @@
                 return;
             }
 
-            const fallback = `فهمت طلبك يا باشا، وعشان نطلع شغل مظبوط، قولي مثلاً: *"احسب 50 دفتر 4 في الاي 4 أصل وصورة"* أو *"عايز 100 دفتر 30*20"*.`;
+            const fallback = `فهمت طلبك يا باشا، وعشان نطلع شغل مظبوط، قولي مثلاً: *"احسب 50 دفتر 4 في الاي 4 أصل وصورة"* أو *"عايز 20 دفتر 2 في التسعات أصل وصورة"*.`;
             session.messages.push({ role: 'bot', text: fallback });
             saveState();
             renderActiveChatMessages();
             speakTextArabic(fallback);
         }
 
+        // ==================== نظام الميكروفون والتعرف الصوتي المحسن بالكامل ====================
         function resetMicUI() {
             isRecording = false;
-            document.getElementById('micRecordBtn').classList.remove('recording');
-            document.getElementById('voiceBanner').classList.remove('active');
+            const micBtn = document.getElementById('micRecordBtn');
+            const banner = document.getElementById('voiceBanner');
+            if (micBtn) micBtn.classList.remove('recording');
+            if (banner) banner.classList.remove('active');
         }
 
-        function requestMicPermissionAndRecord() {
+        async function requestMicPermissionAndRecord() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                showToast('⚠️ متصفحك لا يدعم المايكروفون، يرجى استخدام Google Chrome', '#dc2626');
+                showToast('⚠️ متصفحك الحالي لا يدعم التعرف على الصوت، يرجى فتح الموقع من Google Chrome أو Edge', '#dc2626', 4500);
                 return;
             }
 
+            // إذا كان يسجل بالفعل، فالضغط مرة أخرى على زر المايك يوقف ويرسل
             if (isRecording && speechRec) {
-                try { speechRec.stop(); } catch (e) { resetMicUI(); }
+                stopVoiceRecording(true);
                 return;
+            }
+
+            // التأكد من صلاحية المايكروفون أولاً عبر MediaDevices لتفادي تعليق المتصفح أو رفض الصلاحية الصامت
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    // إغلاق التراك فوراً حتى يتمكن SpeechRecognition من استخدام الميكروفون بدون تعارض على الموبايل
+                    stream.getTracks().forEach(track => track.stop());
+                } catch (err) {
+                    console.warn('Mic permission error:', err);
+                    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                        showToast('🚫 تم رفض صلاحية الميكروفون! اضغط على علامة القفل 🔒 بجانب رابط الموقع واسمح بالميكروفون', '#dc2626', 5000);
+                    } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                        showToast('⚠️ لم يتم العثور على ميكروفون متصل بجهازك', '#dc2626', 4000);
+                    } else {
+                        showToast('⚠️ تعذر الوصول للميكروفون، تأكد من فتح الموقع عبر HTTPS أو السماح بالمايك', '#dc2626', 4000);
+                    }
+                    return;
+                }
             }
 
             try {
                 if (window.speechSynthesis) window.speechSynthesis.cancel();
 
+                voiceFinalTranscript = document.getElementById('chatInputBox').value.trim();
+                if (voiceFinalTranscript) voiceFinalTranscript += ' ';
+                voiceInterimTranscript = '';
+                voiceCanceled = false;
+                voiceAutoSubmitOnEnd = true;
+
                 speechRec = new SpeechRecognition();
                 speechRec.lang = 'ar-EG';
-                speechRec.continuous = false;
+                speechRec.continuous = true;
                 speechRec.interimResults = true;
+                speechRec.maxAlternatives = 1;
 
                 speechRec.onstart = () => {
                     isRecording = true;
                     document.getElementById('micRecordBtn').classList.add('recording');
                     document.getElementById('voiceBanner').classList.add('active');
-                    document.getElementById('liveVoicePreview').textContent = 'جاري الاستماع...';
+                    document.getElementById('liveVoicePreview').textContent = voiceFinalTranscript || 'تفضل بالتحدث الآن...';
+                    showToast('🎙️ الميكروفون يعمل الآن.. اتكلم براحتك', '#10b981', 2000);
                 };
 
                 speechRec.onresult = (event) => {
-                    let transcript = '';
+                    voiceInterimTranscript = '';
                     for (let i = event.resultIndex; i < event.results.length; i++) {
-                        transcript += event.results[i][0].transcript;
+                        const piece = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            voiceFinalTranscript += piece + ' ';
+                        } else {
+                            voiceInterimTranscript += piece;
+                        }
                     }
-                    document.getElementById('chatInputBox').value = transcript;
-                    document.getElementById('liveVoicePreview').textContent = transcript;
+                    const combined = (voiceFinalTranscript + voiceInterimTranscript).replace(/\s+/g, ' ').trim();
+                    const box = document.getElementById('chatInputBox');
+                    box.value = combined;
+                    autoResizeTextarea(box);
+                    document.getElementById('liveVoicePreview').textContent = combined || 'جاري الاستماع...';
                 };
 
                 speechRec.onerror = (event) => {
+                    console.warn('SpeechRecognition error:', event.error);
+                    if (event.error === 'no-speech') {
+                        showToast('🎤 لم يتم سماع صوت واضح، حاول التحدث بالقرب من المايك', '#f59e0b', 3000);
+                    } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                        showToast('🚫 تم حظر الميكروفون من المتصفح، يرجى تفعيل الإذن من إعدادات الموقع', '#dc2626', 4500);
+                    } else if (event.error === 'network') {
+                        showToast('🌐 خدمة التعرف الصوتي تحتاج اتصال بالإنترنت', '#dc2626', 3500);
+                    } else if (event.error !== 'aborted') {
+                        showToast('⚠️ حدث خطأ أثناء التسجيل الصوتي: ' + event.error, '#dc2626', 3500);
+                    }
                     resetMicUI();
-                    showToast('⚠️ يرجى السماح بالوصول للمايكروفون من متصفحك', '#dc2626');
                 };
 
                 speechRec.onend = () => {
                     resetMicUI();
+                    if (voiceCanceled) {
+                        voiceCanceled = false;
+                        return;
+                    }
                     const val = document.getElementById('chatInputBox').value.trim();
-                    if (val) {
+                    if (val && voiceAutoSubmitOnEnd) {
+                        voiceAutoSubmitOnEnd = false;
                         submitUserMessage();
                     }
                 };
 
                 speechRec.start();
             } catch (e) {
+                console.error(e);
                 resetMicUI();
-                showToast('⚠️ تعذر بدء التسجيل الصوتي', '#dc2626');
+                showToast('⚠️ تعذر بدء التسجيل الصوتي، حاول مرة أخرى', '#dc2626');
             }
         }
 
-        function stopVoiceRecording() {
+        function stopVoiceRecording(shouldSend = true) {
+            voiceAutoSubmitOnEnd = shouldSend;
             if (speechRec && isRecording) {
-                try { speechRec.stop(); } catch (e) { resetMicUI(); }
+                try {
+                    speechRec.stop();
+                } catch (e) {
+                    resetMicUI();
+                    if (shouldSend && document.getElementById('chatInputBox').value.trim()) {
+                        submitUserMessage();
+                    }
+                }
+            } else {
+                resetMicUI();
             }
         }
 
-        function clearLocalStorageWithWarning() {
-            if (!confirm('⚠️ تنبيه خطير: هل أنت متأكد من مسح الذاكرة المحلية (Local Storage) بالكامل؟ سيتم حذف جميع الشغلانات المحفوظة وإعادة ضبط الإعدادات.')) return;
+        function cancelVoiceRecording() {
+            voiceCanceled = true;
+            voiceAutoSubmitOnEnd = false;
+            if (speechRec && isRecording) {
+                try { speechRec.abort(); } catch (e) {}
+            }
+            document.getElementById('chatInputBox').value = '';
+            document.getElementById('liveVoicePreview').textContent = '';
+            resetMicUI();
+            showToast('✕ تم إلغاء التسجيل الصوتي', '#64748b', 2000);
+        }
+
+        // ==================== إعدادات النظام ومسح الذاكرة الآمن ====================
+        function showResetConfirmUI() {
+            document.getElementById('resetInitBtn').style.display = 'none';
+            document.getElementById('resetConfirmBox').style.display = 'flex';
+        }
+
+        function hideResetConfirmUI() {
+            document.getElementById('resetInitBtn').style.display = 'block';
+            document.getElementById('resetConfirmBox').style.display = 'none';
+        }
+
+        function executeLocalStorageReset() {
             localStorage.clear();
             settings = JSON.parse(JSON.stringify(defaultSettings));
             papers = JSON.parse(JSON.stringify(defaultPapers));
@@ -1619,6 +1849,7 @@
             bindings = JSON.parse(JSON.stringify(defaultBindings));
             sessions = [];
             saveState();
+            hideResetConfirmUI();
             closeSettingsModal();
             createNewChatSession();
             showToast('🗑️ تم مسح الذاكرة المحلية واستعادة الإعدادات الافتراضية بنجاح');
@@ -1628,6 +1859,7 @@
             autoSpeak = !autoSpeak;
             updateSpeakButtonUI();
             if (!autoSpeak && window.speechSynthesis) window.speechSynthesis.cancel();
+            showToast(autoSpeak ? '🔊 تم تفعيل النطق الصوتي التلقائي' : '🔇 تم إيقاف النطق التلقائي');
         }
 
         function updateSpeakButtonUI() {
@@ -1654,17 +1886,21 @@
 
         function copyReplyText(text) {
             const clean = text.replace(/[*#_`~]/g, '');
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(clean).then(() => showToast('📋 تم النسخ'));
-            } else {
-                const ta = document.createElement('textarea');
-                ta.value = clean;
-                document.body.appendChild(ta);
-                ta.select();
+            const ta = document.createElement('textarea');
+            ta.value = clean;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
                 document.execCommand('copy');
-                document.body.removeChild(ta);
-                showToast('📋 تم النسخ');
+                showToast('📋 تم النسخ إلى الحافظة بنجاح');
+            } catch (e) {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(clean).then(() => showToast('📋 تم النسخ إلى الحافظة بنجاح'));
+                }
             }
+            document.body.removeChild(ta);
         }
 
         function shareInvoiceToWhatsApp(inv, mode) {
@@ -1672,7 +1908,7 @@
             if (mode === 'summary') {
                 t = `📘 *عدد الدفاتر:* ${inv.numBooks} دفتر\n📐 *المقاس:* ${inv.formula} (${inv.paperName})\n━━━━━━━━━━━━━━\n💰 *الإجمالي النهائي:* ${inv.grandTotal.toFixed(2)} جنيه`;
             } else {
-                t = `📘 *عدد الدفاتر:* ${inv.numBooks} دفتر\n📐 *المقاس:* ${inv.formula} | *الورق:* ${inv.paperName}\n🔢 *الفورمة:* ${inv.unifiedForm}\n━━━━━━━━━━━━━━\n📄 *الورق:* ${inv.paperCost.toFixed(2)} ج\n⚙️ *التراجات:* ${inv.trajCost.toFixed(2)} ج\n💿 *الزنكات:* ${inv.zincCost.toFixed(2)} ج\n📚 *التجليد:* ${inv.bindCost.toFixed(2)} ج\n━━━━━━━━━━━━━━\n💰 *الإجمالي النهائي:* ${inv.grandTotal.toFixed(2)} جنيه`;
+                t = `📘 *عدد الدفاتر:* ${inv.numBooks} دفتر\n📐 *المقاس:* ${inv.formula} | *الورق:* ${inv.paperName}\n🔢 *الفورمة:* ${inv.unifiedForm}\n━━━━━━━━━━━━━━\n📄 *الورق:* ${inv.paperCost.toFixed(2)} ج (${inv.finalPapers} فرخ)\n⚙️ *التراجات:* ${inv.trajCost.toFixed(2)} ج (${inv.trajCount} تراج)\n💿 *الزنكات:* ${inv.zincCost.toFixed(2)} ج (${inv.numZinc} زنكة)\n📚 *التجليد:* ${inv.bindCost.toFixed(2)} ج\n━━━━━━━━━━━━━━\n💰 *الإجمالي النهائي:* ${inv.grandTotal.toFixed(2)} جنيه`;
             }
             window.open(`https://wa.me/?text=${encodeURIComponent(t)}`, '_blank');
         }
@@ -1712,34 +1948,46 @@
         }
 
         function openSettingsModal() {
-            document.getElementById('settingsModal').style.display = 'flex';
+            hideResetConfirmUI();
             document.getElementById('setZinc').value = settings.zincPrice;
             document.getElementById('setTraj').value = settings.trajPrice;
             document.getElementById('setSheets').value = settings.sheetsPerBook;
+
+            const papersGrid = document.getElementById('settingsPapersGrid');
+            papersGrid.innerHTML = '';
+            Object.keys(papers).forEach(key => {
+                const p = papers[key];
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label style="font-size:0.76rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:2px;">${p.name} (ج):</label>
+                    <input type="number" step="0.1" data-paper-key="${key}" class="form-input paper-price-input" value="${p.price}">
+                `;
+                papersGrid.appendChild(div);
+            });
+
+            document.getElementById('settingsModal').style.display = 'flex';
         }
 
-        function closeSettingsModal() { document.getElementById('settingsModal').style.display = 'none'; }
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
 
         function saveSettingsFromModal() {
             settings.zincPrice = parseFloat(document.getElementById('setZinc').value) || 65;
             settings.trajPrice = parseFloat(document.getElementById('setTraj').value) || 100;
             settings.sheetsPerBook = parseFloat(document.getElementById('setSheets').value) || 50;
-            saveState();
-            closeSettingsModal();
-            showToast('✅ تم حفظ الإعدادات');
-        }
 
-        function factoryResetAll() {
-            if (!confirm('هل تريد استعادة المصنع والأسعار الافتراضية؟')) return;
-            localStorage.clear();
-            settings = JSON.parse(JSON.stringify(defaultSettings));
-            papers = JSON.parse(JSON.stringify(defaultPapers));
-            formulas = JSON.parse(JSON.stringify(defaultFormulas));
-            bindings = JSON.parse(JSON.stringify(defaultBindings));
+            document.querySelectorAll('.paper-price-input').forEach(inp => {
+                const key = inp.getAttribute('data-paper-key');
+                const val = parseFloat(inp.value);
+                if (key && papers[key] && !isNaN(val)) {
+                    papers[key].price = val;
+                }
+            });
+
             saveState();
             closeSettingsModal();
-            createNewChatSession();
-            showToast('✅ تمت الإعادة بنجاح');
+            showToast('✅ تم حفظ جميع الأسعار والإعدادات بنجاح');
         }
 
         document.addEventListener('DOMContentLoaded', initApp);
