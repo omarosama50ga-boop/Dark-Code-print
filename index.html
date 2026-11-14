@@ -801,7 +801,7 @@
 
                 <!-- صندوق الإدخال والمايكروفون -->
                 <div class="composer-box">
-                    <button type="button" class="mic-button" id="micRecordBtn" ontouchend="toggleVoiceRecording(); event.preventDefault();" onclick="toggleVoiceRecording()" title="اضغط للتحدث بالصوت بالعربي">
+                    <button type="button" class="mic-button" id="micRecordBtn" onclick="requestMicPermissionAndRecord()" title="اضغط للتحدث بالصوت بالعربي">
                         🎙️
                     </button>
                     <textarea id="chatInputBox" rows="1" class="chat-textarea" placeholder="اكتب أو اضغط 🎙️ واتكلم.. (مثال: 50 دفتر 4 في الاي 4 أصل وصورة)" oninput="autoResizeTextarea(this)" onkeydown="handleEnterKey(event)"></textarea>
@@ -853,7 +853,7 @@
     <div id="toastAlert">تم النسخ بنجاح</div>
 
     <script>
-        const STORAGE_PREFIX = 'darkcode_hybrid_v6';
+        const STORAGE_PREFIX = 'darkcode_hybrid_v7';
 
         const defaultSettings = { zincPrice: 65, trajPrice: 100, sheetsPerBook: 50 };
 
@@ -1536,7 +1536,7 @@
             document.getElementById('voiceBanner').classList.remove('active');
         }
 
-        function toggleVoiceRecording() {
+        async function requestMicPermissionAndRecord() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
                 showToast('⚠️ متصفحك لا يدعم المايكروفون، يرجى استخدام Google Chrome الحديث', '#dc2626');
@@ -1546,6 +1546,18 @@
             if (isRecording && speechRec) {
                 try { speechRec.stop(); } catch (e) { resetMicUI(); }
                 return;
+            }
+
+            // طلب إذن المايكروفون رسمياً عبر navigator.mediaDevices أولاً ليظهر للسلطة في المتصفح
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    // إيقاف الستريم فوراً لعدم احتكار الخط، فقط لجلب إذن المتصفح
+                    stream.getTracks().forEach(track => track.stop());
+                } catch (err) {
+                    showToast('⚠️ يرجى السماح بالوصول للمايكروفون من إعدادات المتصفح', '#dc2626');
+                    return;
+                }
             }
 
             try {
@@ -1575,7 +1587,7 @@
                 speechRec.onerror = (event) => {
                     resetMicUI();
                     if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                        showToast('⚠️ يرجى السماح للمتصفح بالوصول للمايكروفون من إعدادات الموقع', '#dc2626');
+                        showToast('⚠️ تم رفض الإذن، يرجى السماح للمايكروفون من قفل المتصفح', '#dc2626');
                     }
                 };
 
@@ -1590,7 +1602,7 @@
                 speechRec.start();
             } catch (e) {
                 resetMicUI();
-                showToast('⚠️ تأكد من تفعيل صلاحيات المايكروفون في المتصفح', '#dc2626');
+                showToast('⚠️ تعذر بدء التسجيل الصوتي', '#dc2626');
             }
         }
 
