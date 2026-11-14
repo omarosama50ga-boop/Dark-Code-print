@@ -732,7 +732,7 @@
                 <div class="brand-box" onclick="document.getElementById('logoUploadInput').click()" title="اضغط لتغيير صورة اللوجو (1.jpg)">
                     <div class="logo-frame">
                         <img id="brandLogoImg" src="./1.jpg" alt="DC" onerror="this.style.display='none'; document.getElementById('fallbackGoldSvg').style.display='block';">
-                        <svg id="fallbackGoldSvg" style="display:none; width:36px; height:36px;" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg id="fallbackGoldSvg" style="display:block; width:36px; height:36px;" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <defs>
                                 <linearGradient id="dcGold" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" stop-color="#FDE68A"/>
@@ -949,6 +949,12 @@
                 img.src = savedLogo;
                 img.style.display = 'block';
                 document.getElementById('fallbackGoldSvg').style.display = 'none';
+            } else {
+                // إذا لم يتم رفع صورة، يتم إخفاء الـ img لتجنب خطأ 404 وتفعيل شعار الـ SVG الفخم
+                const img = document.getElementById('brandLogoImg');
+                if (img) img.style.display = 'none';
+                const svg = document.getElementById('fallbackGoldSvg');
+                if (svg) svg.style.display = 'block';
             }
 
             settings = JSON.parse(localStorage.getItem(STORAGE_PREFIX + '_settings')) || JSON.parse(JSON.stringify(defaultSettings));
@@ -1542,7 +1548,7 @@
             document.getElementById('voiceBanner').classList.remove('active');
         }
 
-        async function requestMicPermissionAndRecord() {
+        function requestMicPermissionAndRecord() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
                 showToast('⚠️ متصفحك لا يدعم المايكروفون، يرجى استخدام Google Chrome', '#dc2626');
@@ -1552,17 +1558,6 @@
             if (isRecording && speechRec) {
                 try { speechRec.stop(); } catch (e) { resetMicUI(); }
                 return;
-            }
-
-            // فحص إذن المايكروفون المتوافق مع الهواتف عبر getUserMedia أولاً لفتح قفل المتصفح
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    stream.getTracks().forEach(track => track.stop());
-                } catch (err) {
-                    showToast('⚠️ يرجى الضغط على علامة القفل (🔒) في شريط المتصفح والسماح بالوصول للمايكروفون', '#dc2626');
-                    return;
-                }
             }
 
             try {
@@ -1591,9 +1586,7 @@
 
                 speechRec.onerror = (event) => {
                     resetMicUI();
-                    if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                        showToast('⚠️ تم حظر المايكروفون من إعدادات المتصفح، يرجى تفعيله', '#dc2626');
-                    }
+                    showToast('⚠️ يرجى السماح بالوصول للمايكروفون من متصفحك', '#dc2626');
                 };
 
                 speechRec.onend = () => {
