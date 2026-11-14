@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DARK CODE | شات حساب الشغل الذكي</title>
-    <link rel="icon" href="./1.jpg" type="image/jpeg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
         <link rel="icon" href="./img/./1.svg" type="Dark Code">
@@ -742,7 +741,7 @@
 
     <!-- ==================== منطقة الشات الرئيسية ==================== -->
     <main class="main-chat-area">
-        <!-- الهيدر -->
+                <!-- الهيدر -->
         <header class="top-navbar">
             <div style="display:flex; align-items:center; gap:10px;">
                 <button type="button" class="icon-btn md:hidden" onclick="toggleMobileSidebar()" title="سجل المحادثات">
@@ -750,7 +749,7 @@
                 </button>
                 <div class="brand-box" onclick="document.getElementById('logoUploadInput').click()" title="اضغط لتغيير صورة اللوجو">
                     <div class="logo-frame">
-                        <img id="brandLogoImg" src="./1.jpg" alt="DC" onerror="this.style.display='none'; document.getElementById('fallbackGoldSvg').style.display='block';">
+                        <img id="brandLogoImg" src="" alt="DC" style="display:none;" onerror="this.style.display='none'; document.getElementById('fallbackGoldSvg').style.display='block';">
                         <svg id="fallbackGoldSvg" style="display:block; width:36px; height:36px;" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <defs>
                                 <linearGradient id="dcGold" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -824,10 +823,10 @@
 
                 <!-- صندوق الإدخال والمايكروفون -->
                 <div class="composer-box">
-                    <button type="button" class="mic-button" id="micRecordBtn" onclick="requestMicPermissionAndRecord()" title="اضغط للتحدث بالصوت بالعربي">
+                    <button type="button" class="mic-button" id="micRecordBtn" onclick="toggleMicRecording()" title="اضغط للتحدث بالصوت فوراً">
                         🎙️
                     </button>
-                    <textarea id="chatInputBox" rows="1" class="chat-textarea" placeholder="اكتب أو اضغط 🎙️ واتكلم.. (مثال: 50 دفتر 4 في الاي 4 أصل وصورة)" oninput="autoResizeTextarea(this)" onkeydown="handleEnterKey(event)"></textarea>
+                    <textarea id="chatInputBox" rows="1" class="chat-textarea" x-webkit-speech speech lang="ar-EG" placeholder="اكتب أو اضغط 🎙️ واتكلم فوراً.. (مثال: 50 دفتر 4 في الاي 4)" oninput="autoResizeTextarea(this)" onkeydown="handleEnterKey(event)"></textarea>
                     <button type="button" class="send-button" onclick="submitUserMessage()">
                         <span>إرسال</span>
                         <span>➤</span>
@@ -1018,6 +1017,9 @@
                 bindings = JSON.parse(JSON.stringify(defaultBindings));
                 sessions = [];
             }
+
+            // تجهيز محرك الصوت مسبقاً ليعمل بضغطة واحدة بدون تأخير
+            initPersistentSpeechEngine();
 
             if (sessions.length === 0) {
                 createNewChatSession();
@@ -1686,7 +1688,7 @@
             speakTextArabic(fallback);
         }
 
-        // ==================== نظام الميكروفون والتعرف الصوتي المحسن بالكامل ====================
+        // ==================== نظام الميكروفون الفوري والمباشر بدون نوافذ إذن إضافية ====================
         function resetMicUI() {
             isRecording = false;
             const micBtn = document.getElementById('micRecordBtn');
@@ -1695,47 +1697,11 @@
             if (banner) banner.classList.remove('active');
         }
 
-        async function requestMicPermissionAndRecord() {
+        function initPersistentSpeechEngine() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                showToast('⚠️ متصفحك الحالي لا يدعم التعرف على الصوت، يرجى فتح الموقع من Google Chrome أو Edge', '#dc2626', 4500);
-                return;
-            }
-
-            // إذا كان يسجل بالفعل، فالضغط مرة أخرى على زر المايك يوقف ويرسل
-            if (isRecording && speechRec) {
-                stopVoiceRecording(true);
-                return;
-            }
-
-            // التأكد من صلاحية المايكروفون أولاً عبر MediaDevices لتفادي تعليق المتصفح أو رفض الصلاحية الصامت
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    // إغلاق التراك فوراً حتى يتمكن SpeechRecognition من استخدام الميكروفون بدون تعارض على الموبايل
-                    stream.getTracks().forEach(track => track.stop());
-                } catch (err) {
-                    console.warn('Mic permission error:', err);
-                    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                        showToast('🚫 تم رفض صلاحية الميكروفون! اضغط على علامة القفل 🔒 بجانب رابط الموقع واسمح بالميكروفون', '#dc2626', 5000);
-                    } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-                        showToast('⚠️ لم يتم العثور على ميكروفون متصل بجهازك', '#dc2626', 4000);
-                    } else {
-                        showToast('⚠️ تعذر الوصول للميكروفون، تأكد من فتح الموقع عبر HTTPS أو السماح بالمايك', '#dc2626', 4000);
-                    }
-                    return;
-                }
-            }
+            if (!SpeechRecognition || speechRec) return;
 
             try {
-                if (window.speechSynthesis) window.speechSynthesis.cancel();
-
-                voiceFinalTranscript = document.getElementById('chatInputBox').value.trim();
-                if (voiceFinalTranscript) voiceFinalTranscript += ' ';
-                voiceInterimTranscript = '';
-                voiceCanceled = false;
-                voiceAutoSubmitOnEnd = true;
-
                 speechRec = new SpeechRecognition();
                 speechRec.lang = 'ar-EG';
                 speechRec.continuous = true;
@@ -1747,7 +1713,6 @@
                     document.getElementById('micRecordBtn').classList.add('recording');
                     document.getElementById('voiceBanner').classList.add('active');
                     document.getElementById('liveVoicePreview').textContent = voiceFinalTranscript || 'تفضل بالتحدث الآن...';
-                    showToast('🎙️ الميكروفون يعمل الآن.. اتكلم براحتك', '#10b981', 2000);
                 };
 
                 speechRec.onresult = (event) => {
@@ -1768,17 +1733,19 @@
                 };
 
                 speechRec.onerror = (event) => {
-                    console.warn('SpeechRecognition error:', event.error);
-                    if (event.error === 'no-speech') {
-                        showToast('🎤 لم يتم سماع صوت واضح، حاول التحدث بالقرب من المايك', '#f59e0b', 3000);
-                    } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                        showToast('🚫 تم حظر الميكروفون من المتصفح، يرجى تفعيل الإذن من إعدادات الموقع', '#dc2626', 4500);
-                    } else if (event.error === 'network') {
-                        showToast('🌐 خدمة التعرف الصوتي تحتاج اتصال بالإنترنت', '#dc2626', 3500);
-                    } else if (event.error !== 'aborted') {
-                        showToast('⚠️ حدث خطأ أثناء التسجيل الصوتي: ' + event.error, '#dc2626', 3500);
-                    }
                     resetMicUI();
+                    if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                        // بديل فوري يعمل بدون أي إذن من المتصفح: تركيز حقل الإدخال لاستخدام ميكروفون الكيبورد المدمج
+                        const box = document.getElementById('chatInputBox');
+                        if (box) box.focus();
+                        if (window.location.protocol === 'file:') {
+                            showToast('💡 لأنك فاتح الملف مباشرة (file://)، استخدم علامة 🎙️ الموجودة في كيبورد الموبايل أو افتح الموقع برابط مباشر ليشتغل بدون إذن', '#f59e0b', 5000);
+                        } else {
+                            showToast('🎙️ تم فتح الكيبورد: اضغط على 🎙️ في الكيبورد للتحدث مباشرة بدون إذن المتصفح!', '#f59e0b', 4500);
+                        }
+                    } else if (event.error === 'no-speech') {
+                        showToast('🎤 لم يتم سماع صوت، اضغط 🎙️ وتحدث مباشرة', '#f59e0b', 2500);
+                    }
                 };
 
                 speechRec.onend = () => {
@@ -1793,12 +1760,51 @@
                         submitUserMessage();
                     }
                 };
+            } catch (e) {
+                console.warn('Speech init warning:', e);
+            }
+        }
 
+        function toggleMicRecording() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                const box = document.getElementById('chatInputBox');
+                if (box) box.focus();
+                showToast('🎙️ اضغط على علامة الميكروفون 🎙️ في لوحة مفاتيح جهازك للتحدث مباشرة بدون إذن!', '#f59e0b', 4000);
+                return;
+            }
+
+            if (!speechRec) {
+                initPersistentSpeechEngine();
+            }
+
+            // إذا كان يسجل بالفعل، فالضغط مرة أخرى يوقف ويرسل فوراً
+            if (isRecording) {
+                stopVoiceRecording(true);
+                return;
+            }
+
+            try {
+                if (window.speechSynthesis) window.speechSynthesis.cancel();
+
+                voiceFinalTranscript = document.getElementById('chatInputBox').value.trim();
+                if (voiceFinalTranscript) voiceFinalTranscript += ' ';
+                voiceInterimTranscript = '';
+                voiceCanceled = false;
+                voiceAutoSubmitOnEnd = true;
+
+                // تشغيل مباشر وفوري في نفس لحظة الضغط بدون getUserMedia
                 speechRec.start();
             } catch (e) {
-                console.error(e);
-                resetMicUI();
-                showToast('⚠️ تعذر بدء التسجيل الصوتي، حاول مرة أخرى', '#dc2626');
+                // إذا كان المحرك عالقاً في جلسة سابقة نعيد تشغيله بسلاسة
+                try {
+                    speechRec.abort();
+                    setTimeout(() => {
+                        try { speechRec.start(); } catch (err) { resetMicUI(); }
+                    }, 60);
+                } catch (err) {
+                    resetMicUI();
+                }
             }
         }
 
