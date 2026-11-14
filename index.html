@@ -801,7 +801,7 @@
 
                 <!-- صندوق الإدخال والمايكروفون -->
                 <div class="composer-box">
-                    <button type="button" class="mic-button" id="micRecordBtn" onclick="toggleVoiceRecording()" title="اضغط للتحدث بالصوت بالعربي">
+                    <button type="button" class="mic-button" id="micRecordBtn" ontouchend="toggleVoiceRecording(); event.preventDefault();" onclick="toggleVoiceRecording()" title="اضغط للتحدث بالصوت بالعربي">
                         🎙️
                     </button>
                     <textarea id="chatInputBox" rows="1" class="chat-textarea" placeholder="اكتب أو اضغط 🎙️ واتكلم.. (مثال: 50 دفتر 4 في الاي 4 أصل وصورة)" oninput="autoResizeTextarea(this)" onkeydown="handleEnterKey(event)"></textarea>
@@ -1539,7 +1539,7 @@
         function toggleVoiceRecording() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                showToast('⚠️ متصفحك لا يدعم المايكروفون، يرجى استخدام Google Chrome', '#dc2626');
+                showToast('⚠️ متصفحك لا يدعم المايكروفون، يرجى استخدام Google Chrome الحديث', '#dc2626');
                 return;
             }
 
@@ -1560,7 +1560,7 @@
                     isRecording = true;
                     document.getElementById('micRecordBtn').classList.add('recording');
                     document.getElementById('voiceBanner').classList.add('active');
-                    document.getElementById('liveVoicePreview').textContent = '...';
+                    document.getElementById('liveVoicePreview').textContent = 'جاري الاستماع...';
                 };
 
                 speechRec.onresult = (event) => {
@@ -1572,16 +1572,26 @@
                     document.getElementById('liveVoicePreview').textContent = transcript;
                 };
 
-                speechRec.onerror = () => { resetMicUI(); };
+                speechRec.onerror = (event) => {
+                    resetMicUI();
+                    if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                        showToast('⚠️ يرجى السماح للمتصفح بالوصول للمايكروفون من إعدادات الموقع', '#dc2626');
+                    }
+                };
+
                 speechRec.onend = () => {
                     resetMicUI();
-                    if (document.getElementById('chatInputBox').value.trim()) {
+                    const val = document.getElementById('chatInputBox').value.trim();
+                    if (val) {
                         submitUserMessage();
                     }
                 };
 
                 speechRec.start();
-            } catch (e) { resetMicUI(); }
+            } catch (e) {
+                resetMicUI();
+                showToast('⚠️ تأكد من تفعيل صلاحيات المايكروفون في المتصفح', '#dc2626');
+            }
         }
 
         function stopVoiceRecording() {
