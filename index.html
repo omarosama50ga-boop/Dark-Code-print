@@ -58,7 +58,6 @@
             transition: background-color 0.25s, color 0.25s;
         }
 
-        /* القائمة الجانبية للمحادثات والمشاريع */
         .sidebar {
             width: 280px;
             background-color: var(--bg-sidebar);
@@ -180,7 +179,6 @@
             font-weight: 800;
         }
 
-        /* منطقة الشات الرئيسية */
         .main-chat-area {
             flex: 1;
             display: flex;
@@ -265,7 +263,6 @@
             background: rgba(212, 175, 55, 0.22);
         }
 
-        /* رسائل المحادثة */
         .messages-viewport {
             flex: 1;
             overflow-y: auto;
@@ -357,7 +354,6 @@
             width: 100%;
         }
 
-        /* تصميم بطاقة الفاتورة الاحترافية */
         .chat-invoice-card {
             margin-top: 12px;
             background: rgba(9, 10, 15, 0.55);
@@ -443,7 +439,6 @@
             white-space: nowrap;
         }
 
-        /* صندوق الإجمالي النهائي الكبير والبارز في وسط الخانات */
         .inv-center-total-box {
             margin: 14px 0;
             padding: 16px 20px;
@@ -509,7 +504,6 @@
             color: #d4af37;
         }
 
-        /* منطقة الإدخال السفلية */
         .composer-outer {
             padding: 10px 14px 16px 14px;
             background: linear-gradient(to top, var(--bg-main) 75%, transparent);
@@ -859,7 +853,7 @@
     <div id="toastAlert">تم النسخ بنجاح</div>
 
     <script>
-        const STORAGE_PREFIX = 'darkcode_hybrid_v5';
+        const STORAGE_PREFIX = 'darkcode_hybrid_v6';
 
         const defaultSettings = { zincPrice: 65, trajPrice: 100, sheetsPerBook: 50 };
 
@@ -1097,7 +1091,6 @@
                         </div>
                     </div>
 
-                    <!-- الإجمالي النهائي بارز وفي وسط الخانات -->
                     <div class="inv-center-total-box">
                         <div class="inv-center-total-title">💰 الإجمالي النهائي للشغلانة</div>
                         <div class="inv-center-total-number">${inv.grandTotal.toFixed(2)} <span style="font-size:1.2rem;">جنيه</span></div>
@@ -1495,7 +1488,7 @@
             renderActiveChatMessages();
             document.getElementById('typingIndicator').style.display = 'block';
 
-            await new Promise(r => setTimeout(r, 400)); // سرعة فائقة جداً
+            await new Promise(r => setTimeout(r, 400));
             document.getElementById('typingIndicator').style.display = 'none';
 
             const generalReply = checkPriceOrGeneralCommand(text);
