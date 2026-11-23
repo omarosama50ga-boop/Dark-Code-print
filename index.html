@@ -2,45 +2,50 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <title>DARK CODE | شات حساب الشغل الذكي</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-        <link rel="icon" href="./img/./1.svg" type="Dark Code">
+        <link rel="icon" href="./img/1.webp" type="Dark Code">
     <style>
         :root {
-            --bg-main: #090a0f;
-            --bg-sidebar: #050608;
-            --bg-surface: #12151f;
-            --bg-user-msg: linear-gradient(135deg, #b45309 0%, #d97706 100%);
-            --bg-bot-msg: #151926;
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            --gold-primary: #d4af37;
-            --gold-bright: #fde047;
-            --border-color: rgba(212, 175, 55, 0.22);
-            --border-subtle: rgba(255, 255, 255, 0.08);
-            --input-bg: #12151f;
+            color-scheme: dark;
+            --bg-main: #0b1020;
+            --bg-sidebar: #0e1527;
+            --bg-surface: #151e31;
+            --bg-user-msg: #5965cb;
+            --bg-bot-msg: #151f33;
+            --text-primary: #f5f7fc;
+            --text-secondary: #c7cfdf;
+            --text-muted: #8995ab;
+            --gold-primary: #d8b56d;
+            --gold-bright: #ead39d;
+            --border-color: rgba(216, 181, 109, .20);
+            --border-subtle: rgba(178, 193, 218, .12);
+            --input-bg: #10182a;
+            --accent: #7882e0;
+            --success: #54b78b;
         }
 
         body.light-mode {
-            --bg-main: #f8fafc;
-            --bg-sidebar: #f1f5f9;
+            color-scheme: light;
+            --bg-main: #f4f6fa;
+            --bg-sidebar: #ffffff;
             --bg-surface: #ffffff;
-            --bg-user-msg: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+            --bg-user-msg: #535fc3;
             --bg-bot-msg: #ffffff;
-            --text-primary: #0f172a;
-            --text-secondary: #334155;
-            --text-muted: #64748b;
-            --gold-primary: #b45309;
-            --gold-bright: #d97706;
-            --border-color: #cbd5e1;
-            --border-subtle: #e2e8f0;
+            --text-primary: #1c2638;
+            --text-secondary: #43516a;
+            --text-muted: #778398;
+            --gold-primary: #946817;
+            --gold-bright: #916516;
+            --border-color: rgba(135, 101, 37, .22);
+            --border-subtle: rgba(35, 51, 78, .11);
             --input-bg: #ffffff;
+            --accent: #5965cb;
+            --success: #23805b;
         }
-
-        * {
+* {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -67,41 +72,6 @@
             flex-shrink: 0;
             transition: transform 0.3s ease;
             z-index: 50;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                width: 85%;
-                max-width: 320px;
-                transform: translateX(100%);
-                box-shadow: -10px 0 30px rgba(0,0,0,0.6);
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .top-navbar {
-                padding: 0 10px;
-                height: 62px;
-            }
-            .brand-name {
-                font-size: 1rem;
-            }
-            .brand-sub {
-                font-size: 0.55rem;
-                letter-spacing: 1px;
-            }
-            .logo-frame {
-                width: 38px;
-                height: 38px;
-            }
-            .icon-btn {
-                padding: 6px 9px;
-                font-size: 0.76rem;
-            }
         }
 
         .sidebar-overlay {
@@ -712,23 +682,239 @@
             text-align: center;
             max-width: 92vw;
         }
+
+        /* DARK CODE mobile-first component styles */
+        *, *::before, *::after { -webkit-tap-highlight-color: transparent; }
+        body {
+            width: 100%;
+            min-width: 320px;
+            height: var(--app-height, 100vh);
+            height: var(--app-height, 100dvh);
+            background: radial-gradient(ellipse at 84% -12%, rgba(92, 104, 192, .15), transparent 38%), var(--bg-main);
+            overflow: hidden;
+        }
+        body.light-mode { background: radial-gradient(ellipse at 84% -12%, rgba(92, 104, 192, .08), transparent 38%), var(--bg-main); }
+        button, input, textarea { font: inherit; }
+        button { touch-action: manipulation; }
+        :focus-visible { outline: 3px solid rgba(120, 130, 224, .65); outline-offset: 2px; }
+
+        .sidebar {
+            width: 300px;
+            background: var(--bg-sidebar);
+            border-left: 1px solid var(--border-subtle);
+            box-shadow: 10px 0 36px rgba(2, 7, 18, .12);
+        }
+        .new-chat-btn {
+            min-height: 48px;
+            margin: 16px 14px 18px;
+            border-radius: 13px;
+            color: #211a0e;
+            background: #e0bd71;
+            box-shadow: none;
+        }
+        .new-chat-btn:hover { background: #edcf8b; transform: translateY(-1px); }
+        .history-header { padding: 0 16px 10px; color: var(--text-muted); font-size: .78rem; font-weight: 800; }
+        #sessionsCountBadge { min-width: 26px; padding: 3px 8px; border-radius: 99px; background: var(--bg-surface); color: var(--text-secondary); text-align: center; }
+        .history-search { position: relative; margin: 0 12px 12px; }
+        .history-search input {
+            width: 100%; min-height: 44px; padding: 10px 38px 10px 12px;
+            border: 1px solid var(--border-subtle); border-radius: 12px;
+            background: var(--bg-main); color: var(--text-primary); font-size: .9rem;
+        }
+        .history-search-icon { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+        .chat-list { padding: 0 10px 16px; gap: 5px; }
+        .chat-history-item { min-height: 46px; border-radius: 11px; padding: 8px 10px; color: var(--text-secondary); }
+        .chat-history-item:hover { background: rgba(120, 130, 224, .08); }
+        .chat-history-item.active { background: rgba(120, 130, 224, .14); border-color: rgba(120, 130, 224, .22); color: var(--text-primary); }
+        .session-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+        .session-delete-btn { min-width: 36px; min-height: 36px; border-radius: 9px; background: transparent; color: var(--text-muted); border: 0; cursor: pointer; }
+        .session-delete-btn:hover { background: rgba(220, 80, 80, .12); color: #e57676; }
+        .history-empty-state { padding: 18px 12px; text-align: center; color: var(--text-muted); font-size: .88rem; }
+
+        .main-chat-area { min-width: 0; min-height: 0; }
+        .top-navbar {
+            min-height: 68px; height: auto; padding: 8px clamp(12px, 2vw, 24px);
+            background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle);
+            box-shadow: 0 4px 18px rgba(2, 7, 18, .05);
+        }
+        .header-brand-group { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .mobile-menu-button { display: none; min-width: 44px; min-height: 44px; justify-content: center; }
+        .brand-box { gap: 10px; cursor: pointer; }
+        .logo-frame {
+            width: 42px; height: 42px; border-radius: 12px;
+            background: #111a2c; border: 1px solid rgba(216, 181, 109, .3);
+            box-shadow: none;
+        }
+        .brand-name { font-size: 1.08rem; letter-spacing: .2px; background: none; color: var(--text-primary); -webkit-text-fill-color: currentColor; }
+        .brand-sub { color: var(--text-muted); font-size: .68rem; letter-spacing: .2px; font-weight: 600; }
+        .header-actions { display: flex; align-items: center; gap: 7px; }
+        .icon-btn {
+            min-height: 42px; padding: 8px 11px; border-radius: 11px;
+            border: 1px solid var(--border-subtle); background: var(--bg-main);
+            color: var(--text-secondary); font-size: .84rem;
+        }
+        .icon-btn:hover { background: var(--bg-surface); border-color: var(--border-color); }
+        .button-label { display: inline; }
+
+        .messages-viewport { min-height: 0; padding: 24px clamp(14px, 3vw, 34px) 28px; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(137,149,171,.3) transparent; }
+        .messages-container { width: 100%; max-width: 860px; gap: 22px; }
+        .msg-item { gap: 10px; align-items: flex-start; animation: message-enter .18s ease-out both; }
+        @keyframes message-enter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .avatar-circle { width: 34px; height: 34px; border-radius: 11px; font-size: .78rem; }
+        .msg-item.bot .avatar-circle { background: #202942; color: var(--gold-bright); border: 1px solid var(--border-subtle); }
+        body.light-mode .msg-item.bot .avatar-circle { background: #eef0fb; color: #5965cb; }
+        .msg-content-wrap { min-width: 0; }
+        .msg-sender-name { color: var(--text-muted); font-size: .75rem; margin-bottom: 5px; }
+        .msg-bubble { padding: 13px 16px; border-radius: 16px; font-size: .97rem; line-height: 1.8; overflow-wrap: anywhere; }
+        .msg-item.user .msg-content-wrap { max-width: min(84%, 680px); flex: 0 1 auto; }
+        .msg-item.user .msg-bubble { background: var(--bg-user-msg); border: 0; border-top-right-radius: 5px; box-shadow: 0 5px 16px rgba(73, 81, 171, .13); }
+        .msg-item.bot .msg-bubble { background: var(--bg-bot-msg); border: 1px solid var(--border-subtle); border-top-right-radius: 5px; box-shadow: 0 5px 18px rgba(2, 7, 18, .04); }
+        .msg-bubble strong { color: var(--gold-primary) !important; }
+        .msg-actions-row { gap: 7px; margin-top: 9px; }
+        .msg-action-chip { min-height: 42px; padding: 8px 12px; border-radius: 10px; background: var(--bg-surface); border-color: var(--border-subtle); font-size: .8rem; }
+
+        .chat-invoice-card { margin-top: 13px; padding: clamp(12px, 2.5vw, 18px); border: 1px solid var(--border-subtle); border-radius: 16px; background: var(--bg-main); }
+        body.light-mode .chat-invoice-card { background: #f7f8fb; border-color: var(--border-subtle); }
+        .inv-header-badges { justify-content: flex-start; gap: 6px; padding-bottom: 11px; margin-bottom: 11px; border-color: var(--border-subtle); }
+        .inv-badge { padding: 5px 10px; color: var(--text-secondary); background: var(--bg-surface); border: 1px solid var(--border-subtle); font-size: .78rem; }
+        .inv-badge, .inv-stat-val, .inv-center-total-number, input[type="number"] { unicode-bidi: plaintext; }
+        body.light-mode .inv-badge { color: var(--text-secondary); background: #fff; border-color: var(--border-subtle); }
+        .inv-grid-boxes { gap: 8px; }
+        .inv-stat-box { min-width: 0; padding: 12px; border-radius: 12px; background: var(--bg-surface); border-color: var(--border-subtle); }
+        .inv-stat-label { font-size: .86rem; }
+        .inv-stat-sub { font-size: .74rem; }
+        .inv-stat-val { color: #54b7c6; font-size: 1rem; unicode-bidi: plaintext; }
+        body.light-mode .inv-stat-val { color: #137e8c; }
+        .inv-center-total-box { margin: 10px 0; padding: 13px 14px; border-radius: 14px; background: rgba(84, 183, 139, .10); border: 1px solid rgba(84, 183, 139, .25); box-shadow: none; }
+        body.light-mode .inv-center-total-box { background: #edf7f2; border-color: #c8e6d6; }
+        .inv-center-total-number { font-size: clamp(1.8rem, 7vw, 2.3rem); color: var(--success); text-shadow: none; }
+        body.light-mode .inv-center-total-number { color: #23805b; }
+
+        .composer-outer {
+            position: sticky; bottom: 0; z-index: 5; flex-shrink: 0;
+            padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+            background: var(--bg-main); border-top: 1px solid var(--border-subtle);
+        }
+        .composer-inner { max-width: 860px; }
+        .suggestions-strip { gap: 7px; padding: 0 1px 8px; overscroll-behavior-x: contain; }
+        .suggestion-pill { min-height: 38px; padding: 7px 12px; background: var(--bg-surface); border-color: var(--border-subtle); font-size: .78rem; }
+        .composer-box { gap: 8px; padding: 6px; border: 1px solid var(--border-subtle); border-radius: 18px; background: var(--input-bg); box-shadow: 0 5px 18px rgba(2, 7, 18, .08); }
+        .composer-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(120,130,224,.12); }
+        .chat-textarea { min-width: 0; min-height: 44px; max-height: 132px; padding: 9px 7px; font-size: 16px; line-height: 1.5; }
+        .mic-button, .send-button { min-width: 46px; min-height: 46px; height: 46px; border-radius: 13px; }
+        .mic-button { border-color: rgba(210, 100, 100, .25); background: rgba(210, 100, 100, .08); }
+        .mic-button:hover { transform: none; }
+        .send-button { padding: 0 14px; color: #211a0e; background: #e0bd71; box-shadow: none; }
+        .send-button:hover { background: #edcf8b; filter: none; }
+        .send-button:active, .mic-button:active, .icon-btn:active, .msg-action-chip:active { transform: scale(.97); }
+        .voice-status-banner { min-height: 48px; border-radius: 13px; }
+        #liveVoicePreview { color: var(--text-primary) !important; }
+        #typingIndicator.thinking-indicator { width: min(100%, 860px); padding: 10px 14px; color: var(--text-muted); font-size: .88rem; }
+        .thinking-dots { display: inline-flex; gap: 3px; margin-inline-start: 5px; vertical-align: middle; }
+        .thinking-dots i { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); animation: thinking 1s infinite ease-in-out; }
+        .thinking-dots i:nth-child(2) { animation-delay: .14s; }
+        .thinking-dots i:nth-child(3) { animation-delay: .28s; }
+        @keyframes thinking { 0%, 60%, 100% { opacity: .35; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+
+        .modal-backdrop { padding: 16px; background: rgba(6, 10, 19, .58); backdrop-filter: blur(5px); }
+        .modal-card { width: min(100%, 700px); max-height: min(90dvh, 900px); padding: 20px; border: 1px solid var(--border-subtle); border-radius: 18px; background: var(--bg-surface); box-shadow: 0 24px 70px rgba(0,0,0,.24); }
+        .settings-modal-header { position: sticky; top: -20px; z-index: 3; margin: -20px -20px 14px !important; padding: 18px 20px 12px; background: var(--bg-surface); }
+        .settings-save-row { position: sticky; bottom: -20px; z-index: 3; margin: 0 -20px -20px !important; padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); background: var(--bg-surface); border-top: 1px solid var(--border-subtle); }
+        .settings-section { padding: 14px; border: 1px solid var(--border-subtle); border-radius: 14px; background: var(--bg-main); }
+        body.light-mode .settings-section { background: #f8f9fc; }
+        .settings-section-title { margin-bottom: 10px; color: var(--text-primary); font-size: .9rem; font-weight: 800; }
+        .settings-hint { color: var(--text-secondary); background: rgba(120,130,224,.08) !important; border-color: var(--border-subtle) !important; border-radius: 12px !important; }
+        .settings-danger { background: rgba(205,70,70,.06) !important; border-color: rgba(205,70,70,.2) !important; border-radius: 13px !important; }
+        .form-input { min-height: 44px; padding: 9px 11px; border-color: var(--border-subtle); border-radius: 10px; background: var(--input-bg); color: var(--text-primary); font-size: 16px; }
+        .form-input:focus { outline: 2px solid rgba(120,130,224,.32); border-color: var(--accent); }
+        .settings-toggle-row { display: flex; flex-wrap: wrap; gap: 8px; }
+        .settings-toggle-row .icon-btn { min-height: 44px; }
+        #settingsModal button { min-height: 44px; }
+        #toastAlert { bottom: calc(18px + env(safe-area-inset-bottom)); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.2); }
+
+        @media (max-width: 768px) {
+            body { height: 100vh; height: 100dvh; min-height: 0; }
+            .sidebar { position: fixed; top: 0; right: 0; bottom: 0; width: min(88vw, 350px); max-width: 350px; height: 100dvh; transform: translateX(100%); transition: transform .24s ease; border-left: 0; box-shadow: -18px 0 44px rgba(0,0,0,.28); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay { background: rgba(4,8,16,.52); backdrop-filter: blur(2px); }
+            .main-chat-area { height: 100%; min-height: 0; }
+            .top-navbar { min-height: 62px; padding: 7px 10px; gap: 8px; }
+            .header-brand-group { gap: 7px; }
+            .mobile-menu-button { display: flex; }
+            .brand-name { font-size: .98rem; }
+            .brand-sub { font-size: .62rem; }
+            .logo-frame { width: 36px; height: 36px; }
+            .header-actions { gap: 5px; }
+            .header-actions .icon-btn { min-width: 42px; min-height: 42px; padding: 7px; justify-content: center; }
+            .header-actions .button-label { display: none; }
+            .messages-viewport { padding: 16px 12px 18px; }
+            .messages-container { gap: 17px; }
+            .msg-item { gap: 7px; }
+            .avatar-circle { width: 30px; height: 30px; font-size: .7rem; }
+            .msg-bubble { padding: 11px 13px; font-size: .95rem; }
+            .msg-item.user .msg-content-wrap { max-width: calc(100% - 38px); }
+            .msg-action-chip { min-height: 44px; padding: 8px 10px; }
+            .inv-grid-boxes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .inv-stat-box { flex-direction: column; align-items: flex-start; gap: 5px; }
+            .composer-outer { padding: 8px 9px calc(8px + env(safe-area-inset-bottom)); }
+            .suggestion-pill { min-height: 36px; }
+            .composer-box { gap: 6px; }
+            .mic-button, .send-button { min-width: 44px; min-height: 44px; height: 44px; }
+            .send-button { padding-inline: 11px; }
+            .modal-backdrop { align-items: flex-end; padding: 8px 8px 0; }
+            .modal-card { width: 100%; max-width: none; max-height: 90dvh; border-radius: 20px 20px 0 0; padding: 16px 13px calc(16px + env(safe-area-inset-bottom)); }
+            .settings-modal-header { top: -16px; margin: -16px -13px 12px !important; padding: 14px 13px 10px; }
+            .settings-save-row { bottom: -16px; margin: 0 -13px -16px !important; padding: 10px 13px calc(10px + env(safe-area-inset-bottom)); }
+            .settings-section { padding: 11px; }
+            #settingsModal .modal-card div[style*="grid-template-columns: repeat(3, 1fr)"] { grid-template-columns: 1fr !important; }
+        }
+
+        @media (max-width: 380px) {
+            .top-navbar { padding-inline: 6px; }
+            .header-brand-group { gap: 4px; }
+            .brand-box { gap: 6px; }
+            .brand-name { font-size: .86rem; }
+            .brand-sub { font-size: .56rem; }
+            .logo-frame { width: 32px; height: 32px; }
+            .header-actions { gap: 3px; }
+            .header-actions .icon-btn { min-width: 40px; min-height: 40px; }
+            .msg-item.user .avatar-circle { display: none; }
+            .msg-item.user .msg-content-wrap { max-width: 94%; }
+            .inv-grid-boxes { grid-template-columns: 1fr; }
+            .composer-outer { padding-inline: 6px; }
+        }
+
+        @media (min-width: 769px) {
+            .messages-container { padding-inline: 12px; }
+            .composer-outer { padding-bottom: 14px; }
+            .settings-section { padding: 16px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()" aria-hidden="true"></div>
 
     <!-- ==================== القائمة الجانبية للمحادثات والمشاريع ==================== -->
-    <aside class="sidebar" id="sidebarPanel">
+    <aside class="sidebar" id="sidebarPanel" aria-label="سجل المحادثات">
         <button type="button" class="new-chat-btn" onclick="createNewChatSession()">
             <span>➕</span>
             <span>محادثة / شغلانة جديدة</span>
         </button>
 
-        <div style="padding: 0 14px 8px 14px; font-size: 0.78rem; font-weight: 800; color: var(--text-muted); display:flex; justify-content:space-between; align-items:center;">
+        <div class="history-header" style="display:flex; justify-content:space-between; align-items:center;">
             <span>سجل الشغلانات المحفوظة</span>
             <span id="sessionsCountBadge">1</span>
         </div>
+
+        <label class="history-search">
+            <span class="history-search-icon" aria-hidden="true">⌕</span>
+            <input id="sessionSearchInput" type="search" placeholder="ابحث في الشغلانات..." autocomplete="off" oninput="renderSidebarSessions()" aria-label="ابحث في المحادثات">
+        </label>
 
         <div class="chat-list" id="chatSessionsList"></div>
 
@@ -743,8 +929,8 @@
     <main class="main-chat-area">
                 <!-- الهيدر -->
         <header class="top-navbar">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <button type="button" class="icon-btn md:hidden" onclick="toggleMobileSidebar()" title="سجل المحادثات">
+            <div class="header-brand-group">
+                <button type="button" class="icon-btn mobile-menu-button" id="mobileHistoryBtn" onclick="toggleMobileSidebar()" title="سجل المحادثات" aria-label="فتح سجل المحادثات" aria-expanded="false" aria-controls="sidebarPanel">
                     ☰
                 </button>
                 <div class="brand-box" onclick="document.getElementById('logoUploadInput').click()" title="اضغط لتغيير صورة اللوجو">
@@ -768,20 +954,20 @@
                     </div>
                     <div>
                         <div class="brand-name">DARK CODE</div>
-                        <span class="brand-sub">BUSINESS SERVICES</span>
+                        <span class="brand-sub">مساعد المطبعة الذكي</span>
                     </div>
                     <input type="file" id="logoUploadInput" accept="image/*" style="display:none" onchange="uploadCustomLogo(event)">
                 </div>
             </div>
 
-            <div style="display:flex; align-items:center; gap:6px;">
-                <button type="button" class="icon-btn" id="voiceSpeakBtn" onclick="toggleAutoSpeak()" title="نطق الردود صوتياً">
-                    🔇 صامت
+            <div class="header-actions">
+                <button type="button" class="icon-btn" id="voiceSpeakBtn" onclick="toggleAutoSpeak()" title="نطق الردود صوتياً" aria-label="تفعيل النطق الصوتي">
+                    🔇 <span class="button-label">صامت</span>
                 </button>
-                <button type="button" class="icon-btn" id="themeBtn" onclick="toggleThemeMode()">
-                    ☀️ نهاري
+                <button type="button" class="icon-btn" id="themeBtn" onclick="toggleThemeMode()" title="تغيير المظهر">
+                    ☀️ <span class="button-label">نهاري</span>
                 </button>
-                <button type="button" class="icon-btn" onclick="openSettingsModal()" title="الإعدادات والأسعار">
+                <button type="button" class="icon-btn" onclick="openSettingsModal()" title="الإعدادات والأسعار" aria-label="الإعدادات والأسعار">
                     ⚙️
                 </button>
             </div>
@@ -790,8 +976,8 @@
         <!-- نافذة الرسائل -->
         <div class="messages-viewport" id="messagesViewport">
             <div class="messages-container" id="messagesContainer"></div>
-            <div id="typingIndicator" style="display:none; padding:12px; color:var(--text-muted); font-size:1rem; font-weight:800; margin-top:14px; max-width:820px; margin-inline:auto;">
-                <span style="display:inline-block; animation: blink 1.2s infinite both;">⏳</span> جاري الحساب وتحليل الطلب...
+            <div id="typingIndicator" class="thinking-indicator" style="display:none;" role="status" aria-live="polite">
+                جاري تجهيز الحساب <span class="thinking-dots" aria-hidden="true"><i></i><i></i><i></i></span>
             </div>
         </div>
 
@@ -800,7 +986,7 @@
             <div class="composer-inner">
                 <!-- إشعار التسجيل الصوتي الحي -->
                 <div class="voice-status-banner" id="voiceBanner">
-                    <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:200px;">
+                    <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
                         <span class="voice-wave-dot"></span>
                         <span>🎙️ مسجل الصوت نشط:</span>
                         <strong id="liveVoicePreview" style="color:#fff; word-break:break-word;">تفضل بالتحدث الآن...</strong>
@@ -812,7 +998,7 @@
                 </div>
 
                 <!-- أمثلة سريعة بضغطة واحدة -->
-                <div class="suggestions-strip">
+                <div class="suggestions-strip" aria-label="اقتراحات سريعة">
                     <button type="button" class="suggestion-pill" onclick="quickSend('احسب 50 دفتر 4 في الاي 4')">💬 50 دفتر 4 في الاي 4</button>
                     <button type="button" class="suggestion-pill" onclick="quickSend('عايز 20 دفتر 2 في التسعات أصل وصورة')">💬 20 دفتر 2 في التسعات</button>
                     <button type="button" class="suggestion-pill" onclick="quickSend('100 دفتر 3 في التمنيات أصل وصورتين و 2 زنكة')">💬 100 دفتر 3 في التمنيات</button>
@@ -823,11 +1009,11 @@
 
                 <!-- صندوق الإدخال والمايكروفون -->
                 <div class="composer-box">
-                    <button type="button" class="mic-button" id="micRecordBtn" onclick="toggleMicRecording()" title="اضغط للتحدث بالصوت فوراً">
+                    <button type="button" class="mic-button" id="micRecordBtn" onclick="toggleMicRecording()" title="اضغط للتحدث بالصوت فوراً" aria-label="تسجيل صوتي">
                         🎙️
                     </button>
                     <textarea id="chatInputBox" rows="1" class="chat-textarea" x-webkit-speech speech lang="ar-EG" placeholder="اكتب أو اضغط 🎙️ واتكلم فوراً.. (مثال: 50 دفتر 4 في الاي 4)" oninput="autoResizeTextarea(this)" onkeydown="handleEnterKey(event)"></textarea>
-                    <button type="button" class="send-button" onclick="submitUserMessage()">
+                    <button type="button" class="send-button" onclick="submitUserMessage()" aria-label="إرسال الرسالة">
                         <span>إرسال</span>
                         <span>➤</span>
                     </button>
@@ -837,17 +1023,17 @@
     </main>
 
     <!-- ==================== نافذة الإعدادات ==================== -->
-    <div class="modal-backdrop" id="settingsModal">
-        <div class="modal-card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border-subtle); padding-bottom:10px;">
-                <h3 style="font-size:1.15rem; font-weight:900; color:var(--gold-primary);">⚙️ إعدادات الأسعار والنظام - DARK CODE</h3>
-                <button type="button" onclick="closeSettingsModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.3rem; cursor:pointer;">✕</button>
+    <div class="modal-backdrop" id="settingsModal" onclick="if(event.target === this) closeSettingsModal()">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+            <div class="settings-modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border-subtle); padding-bottom:10px;">
+                <h3 id="settingsTitle" style="font-size:1.15rem; font-weight:900; color:var(--gold-primary);">⚙️ إعدادات DARK CODE</h3>
+                <button type="button" onclick="closeSettingsModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.3rem; cursor:pointer;" aria-label="إغلاق الإعدادات">✕</button>
             </div>
 
             <div style="display:flex; flex-direction:column; gap:14px;">
                 <!-- الأسعار الأساسية -->
-                <div>
-                    <div style="font-size:0.88rem; font-weight:800; color:var(--gold-bright); margin-bottom:8px;">📌 الأسعار الأساسية للمطبعة:</div>
+                <div class="settings-section">
+                    <div class="settings-section-title">الأسعار الأساسية للمطبعة</div>
                     <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
                         <div>
                             <label style="font-size:0.8rem; font-weight:700; color:var(--text-secondary);">سعر الزنكة (ج):</label>
@@ -865,19 +1051,32 @@
                 </div>
 
                 <!-- أسعار الورق الكربون -->
-                <div>
-                    <div style="font-size:0.88rem; font-weight:800; color:var(--gold-bright); margin-bottom:8px;">📄 أسعار الفرخ المكربن (أصل + صورة):</div>
+                <div class="settings-section">
+                    <div class="settings-section-title">أسعار الورق المكربن (أصل + صورة)</div>
                     <div id="settingsPapersGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap:8px;"></div>
                 </div>
 
-                <div style="background:rgba(212,175,55,0.08); border:1px solid var(--border-color); padding:10px 12px; border-radius:10px; font-size:0.84rem; line-height:1.6;">
+                <div class="settings-section">
+                    <div class="settings-section-title">أسعار التجليد حسب المقاس (أصل + صورة)</div>
+                    <div id="settingsBindingsGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap:8px;"></div>
+                </div>
+
+                <div class="settings-section">
+                    <div class="settings-section-title">الصوت والمظهر</div>
+                    <div class="settings-toggle-row">
+                        <button type="button" class="icon-btn" id="settingsSpeakBtn" onclick="toggleAutoSpeak()">🔇 النطق صامت</button>
+                        <button type="button" class="icon-btn" id="settingsThemeBtn" onclick="toggleThemeMode()">☀️ المظهر النهاري</button>
+                    </div>
+                </div>
+
+                <div class="settings-hint" style="background:rgba(212,175,55,0.08); border:1px solid var(--border-color); padding:10px 12px; border-radius:10px; font-size:0.84rem; line-height:1.6;">
                     💡 <strong>أوامر ذكية سريعة من الشات مباشرة:</strong><br>
                     • <em>"خلي سعر الزنكة 70"</em> أو <em>"خلي سعر التراج 120"</em><br>
                     • <em>"ضف 50 جنيه سلوفان"</em> أو <em>"نسبة ربح 15%"</em> أو <em>"خلي التجليد 3 جنيه"</em>
                 </div>
 
                 <!-- منطقة الصيانة وإعادة الضبط بدون نوافذ متصفح منبثقة -->
-                <div style="background:rgba(239, 68, 68, 0.08); border:1px solid rgba(239, 68, 68, 0.3); padding:12px; border-radius:10px;">
+                <div class="settings-danger" style="background:rgba(239, 68, 68, 0.08); border:1px solid rgba(239, 68, 68, 0.3); padding:12px; border-radius:10px;">
                     <div style="font-size:0.85rem; font-weight:800; color:#ef4444; margin-bottom:6px;">⚠️ منطقة الصيانة وإعادة ضبط الذاكرة (LocalStorage):</div>
                     <p style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:8px; line-height:1.5;">يحذف جميع الشغلانات المحفوظة ويعيد ضبط الأسعار للحالة الافتراضية.</p>
                     <button type="button" id="resetInitBtn" onclick="showResetConfirmUI()" style="background:#dc2626; color:#fff; font-weight:800; padding:10px 14px; border-radius:8px; border:none; cursor:pointer; width:100%; font-size:0.88rem;">🗑️ مسح الذاكرة بالكامل (Local Storage Reset)</button>
@@ -887,7 +1086,7 @@
                     </div>
                 </div>
 
-                <div style="display:flex; gap:10px; margin-top:4px;">
+                <div class="settings-save-row" style="display:flex; gap:10px; margin-top:4px;">
                     <button type="button" onclick="saveSettingsFromModal()" style="flex:1; background:linear-gradient(135deg,#d4af37,#b45309); color:#000; font-weight:900; padding:11px; border-radius:10px; border:none; cursor:pointer;">💾 حفظ جميع الإعدادات</button>
                     <button type="button" onclick="closeSettingsModal()" style="background:var(--bg-main); color:var(--text-primary); border:1px solid var(--border-color); font-weight:700; padding:11px 14px; border-radius:10px; cursor:pointer;">إغلاق</button>
                 </div>
@@ -927,6 +1126,9 @@
             '4*8':   { exp: '50 / 8',  trajForm: 4 },
             '25*20': { exp: '50 / 12', trajForm: 1 },
             '40*30': { exp: '50 / 5',  trajForm: 1 },
+            '2*40*30': { exp: '50 / 5', trajForm: 2 },
+            '3*40*30': { exp: '50 / 5', trajForm: 3 },
+            '4*40*30': { exp: '50 / 5', trajForm: 4 },
             '23*20': { exp: '50 / 15', trajForm: 1 },
             '25*23': { exp: '50 / 12', trajForm: 1 },
             'A4':    { exp: '50 / 9',  trajForm: 1 },
@@ -955,7 +1157,10 @@
             'b17': { name: '2*A4',  label: '2*A4',           basePrice: 2.25, stepPrice: 0.25 },
             'b18': { name: '3*A4',  label: '3*A4',           basePrice: 2.00, stepPrice: 0.25 },
             'b19': { name: '4*A4',  label: '4*A4',           basePrice: 1.50, stepPrice: 0.25 },
-            'b20': { name: '3*8',   label: '3*8',            basePrice: 2.25, stepPrice: 0.25 }
+            'b20': { name: '3*8',   label: '3*8',            basePrice: 2.25, stepPrice: 0.25 },
+            'b21': { name: '2*40*30', label: '2×30×40',      basePrice: 2.25, stepPrice: 0.25 },
+            'b22': { name: '3*40*30', label: '3×30×40',      basePrice: 2.00, stepPrice: 0.25 },
+            'b23': { name: '4*40*30', label: '4×30×40',      basePrice: 1.50, stepPrice: 0.25 }
         };
 
         let settings = {};
@@ -986,6 +1191,9 @@
         }
 
         function initApp() {
+            syncAppViewport();
+            if (window.visualViewport) window.visualViewport.addEventListener('resize', syncAppViewport, { passive: true });
+            window.addEventListener('resize', syncAppViewport, { passive: true });
             const savedTheme = localStorage.getItem('darkcode_theme') || 'dark';
             if (savedTheme === 'light') document.body.classList.add('light-mode');
             updateThemeButtonUI();
@@ -1030,6 +1238,11 @@
             }
         }
 
+        function syncAppViewport() {
+            const viewportHeight = window.visualViewport?.height || window.innerHeight;
+            if (viewportHeight > 0) document.documentElement.style.setProperty('--app-height', `${Math.round(viewportHeight)}px`);
+        }
+
         function saveState() {
             try {
                 localStorage.setItem(STORAGE_PREFIX + '_settings', JSON.stringify(settings));
@@ -1045,7 +1258,9 @@
         function defaultJobState() {
             return {
                 numBooks: 100,
+                hasNumBooks: false,
                 formula: '30*20',
+                hasFormula: false,
                 unifiedForm: 1,
                 copies: 2,
                 numZinc: 1,
@@ -1113,17 +1328,36 @@
             const list = document.getElementById('chatSessionsList');
             document.getElementById('sessionsCountBadge').textContent = sessions.length;
             list.innerHTML = '';
+            const query = (document.getElementById('sessionSearchInput')?.value || '').trim().toLocaleLowerCase();
+            const visibleSessions = sessions.filter(s => {
+                if (!query) return true;
+                const searchable = [s.title || '', ...(s.messages || []).map(message => message.text || '')].join(' ').toLocaleLowerCase();
+                return searchable.includes(query);
+            });
 
-            sessions.forEach(s => {
+            if (!visibleSessions.length) {
+                const empty = document.createElement('div');
+                empty.className = 'history-empty-state';
+                empty.textContent = query ? 'مفيش شغلانات مطابقة للبحث.' : 'لسه مفيش محادثات محفوظة.';
+                list.appendChild(empty);
+                return;
+            }
+
+            visibleSessions.forEach(s => {
                 const item = document.createElement('div');
                 item.className = 'chat-history-item' + (s.id === activeSessionId ? ' active' : '');
                 item.onclick = () => switchSession(s.id);
-                item.innerHTML = `
-                    <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">
-                        💬 ${s.title}
-                    </div>
-                    <button type="button" onclick="deleteSession('${s.id}', event)" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.85rem; padding:2px 6px;" title="حذف">✕</button>
-                `;
+                const title = document.createElement('span');
+                title.className = 'session-title';
+                title.textContent = `💬 ${s.title || 'شغلانة بدون اسم'}`;
+                const remove = document.createElement('button');
+                remove.type = 'button';
+                remove.className = 'session-delete-btn';
+                remove.title = 'حذف المحادثة';
+                remove.setAttribute('aria-label', `حذف ${s.title || 'المحادثة'}`);
+                remove.textContent = '×';
+                remove.onclick = event => deleteSession(s.id, event);
+                item.append(title, remove);
                 list.appendChild(item);
             });
         }
@@ -1450,10 +1684,12 @@
             s = s.replace(/(?:ال)?(?:تمنيات|ثمانيات)/g, ' 8 ');
             s = s.replace(/(?:ال)?(?:حداشرات)/g, ' 11 ');
             s = s.replace(/(?:في|فى|\*)\s*ال\s*(\d+|A4)/gi, ' * $1 ');
+            s = s.replace(/(\d+)\s*(?:في|فى|\*)\s*30\s*(?:في|فى|\*)\s*40\b/gi, ' $1*40*30 ');
             s = s.replace(/(\d+)\s*(?:في|فى|علي|على|\*)\s*(?:ال)?\s*(\d+|A4)/gi, ' $1*$2 ');
+            s = s.replace(/\s*\*\s*/g, '*');
 
             s = s.replace(/\b1\*8\b/g, ' 8 ').replace(/\b1\*9\b/g, ' 9 ').replace(/\b1\*11\b/g, ' 30*20 ').replace(/\b1\*A4\b/gi, ' A4 ');
-            s = s.replace(/\b20\*30\b/g, ' 30*20 ').replace(/\b20\*25\b/g, ' 25*20 ').replace(/\b30\*40\b/g, ' 40*30 ').replace(/\b20\*23\b/g, ' 23*20 ').replace(/\b23\*25\b/g, ' 25*23 ');
+            s = s.replace(/\b20\*30\b/g, ' 30*20 ').replace(/\b20\*25\b/g, ' 25*20 ').replace(/\b(\d+)\*30\*40\b/g, ' $1*40*30 ').replace(/\b30\*40\b/g, ' 40*30 ').replace(/\b20\*23\b/g, ' 23*20 ').replace(/\b23\*25\b/g, ' 25*23 ');
             return s.replace(/\s+/g, ' ').trim();
         }
 
@@ -1472,7 +1708,7 @@
         function extractFormulaFromText(normText) {
             const sortedSizes = Object.keys(formulas).sort((a, b) => b.length - a.length);
             for (const sz of sortedSizes) {
-                const escaped = sz.replace('*', '\\*');
+                const escaped = sz.replace(/\*/g, '\\*');
                 const reg = new RegExp(`(?:^|\\s)${escaped}(?:\\s|$)`, 'i');
                 if (reg.test(normText) || normText.includes(sz)) return sz;
             }
@@ -1485,12 +1721,16 @@
 
         function parseJobLocally(rawText, prevJobState) {
             const norm = normalizeSpokenArabic(rawText);
-            const state = prevJobState ? Object.assign({}, prevJobState) : defaultJobState();
+            const state = Object.assign(defaultJobState(), prevJobState || {});
+            // Older saved invoices already had a confirmed quantity and size.
+            if (prevJobState && prevJobState.hasNumBooks === undefined) state.hasNumBooks = true;
+            if (prevJobState && prevJobState.hasFormula === undefined) state.hasFormula = true;
             let matched = false;
 
             const size = extractFormulaFromText(norm);
             if (size) {
                 state.formula = size;
+                state.hasFormula = true;
                 state.unifiedForm = formulas[size]?.trajForm || 1;
                 state.manualPapers = null;
                 state.customBindUnit = null;
@@ -1501,13 +1741,20 @@
             const bookMatch = cleaned.match(/(\d+)\s*(?:دفتر|دفاتر|بوك|نسخه)/);
             if (bookMatch) {
                 state.numBooks = parseInt(bookMatch[1], 10);
+                state.hasNumBooks = state.numBooks > 0;
                 state.manualPapers = null;
                 matched = true;
             } else if (prevJobState && /(?:خليهم|خليناهم|يبقوا|لو|اعملهم|طيب لو)\s*(\d+)/.test(cleaned) && !/زنك|تراج|نسبه|%|ورق|سعر|فرخ/.test(cleaned)) {
                 const m = cleaned.match(/(?:خليهم|خليناهم|يبقوا|لو|اعملهم|طيب لو)\s*(\d+)/);
                 state.numBooks = parseInt(m[1], 10);
+                state.hasNumBooks = state.numBooks > 0;
                 state.manualPapers = null;
                 matched = true;
+            } else if (prevJobState && !state.hasNumBooks && /^\s*\d+\s*[.!؟?]?\s*$/.test(norm)) {
+                // Treat a short numeric reply as the answer to the missing quantity question.
+                state.numBooks = parseInt(norm, 10);
+                state.hasNumBooks = state.numBooks > 0;
+                matched = state.hasNumBooks;
             }
 
             const copies = extractPaperCopiesFromText(norm);
@@ -1630,6 +1877,14 @@
                 return `وعليكم السلام يا هندسة! أهلاً بيك في **DARK CODE**. أنا مساعدك الذكي لحسابات المطابع ومشاريعك جاهز في أي وقت. قولي الشغلانة كام دفتر ومقاس إيه؟`;
             }
 
+            if (/(?:تعرف|تقدر|ممكن|ينفع|بتعرف|بتقدر).{0,35}(?:تحسب|حساب).{0,25}(?:شغل|دفاتر|مطبعه)?|(?:احسبلي|عايز(?:ه)? احسب|محتاج احسب)/.test(norm)) {
+                return `أيوه طبعًا، ابعتلي تفاصيل الشغل **بالترتيب اللي يريحك** وأنا هحسبه من الأسعار والمقاسات المحفوظة عندي.\n\nمثلاً: عدد الدفاتر، المقاس (زي 2 في التسعات أو A4)، وعدد الصور. تقدر تبعتها كلها مرة واحدة أو على كذا رسالة. لو معلومة ناقصة هسألك عنها قبل ما أطلع الإجمالي.`;
+            }
+
+            if (/^(?:اه|ايوه|تمام|ماشي|حاضر)(?:\s|$)/.test(norm)) {
+                return `تمام، ابعت تفاصيل الشغل بأي ترتيب: **عدد الدفاتر والمقاس**، ولو تعرف عدد الصور أو الفورمة اذكرهم كمان. هسألك عن أي حاجة ناقصة قبل الحساب.`;
+            }
+
             return null;
         }
 
@@ -1646,11 +1901,9 @@
             renderActiveChatMessages();
             document.getElementById('typingIndicator').style.display = 'block';
 
-            await new Promise(r => setTimeout(r, 320));
-            document.getElementById('typingIndicator').style.display = 'none';
-
             const generalReply = checkPriceOrGeneralCommand(text);
             if (generalReply) {
+                document.getElementById('typingIndicator').style.display = 'none';
                 let updatedInv = null;
                 if (session.jobState && /سعر الزنكة|سعر التراج/.test(generalReply)) {
                     updatedInv = calculateExactPrintingJob(session.jobState);
@@ -1663,8 +1916,22 @@
             }
 
             const parsed = parseJobLocally(text, session.jobState);
-            if (parsed.matched || !session.jobState) {
+            if (parsed.matched) {
                 session.jobState = parsed.state;
+
+                const missing = [];
+                if (!session.jobState.hasNumBooks) missing.push('كام دفتر محتاج؟');
+                if (!session.jobState.hasFormula) missing.push('المقاس إيه؟ (مثلاً: 2 في التسعات أو A4)');
+                if (missing.length) {
+                    const followUp = `تمام، سجلت تفاصيل الشغل اللي قلتها. عشان أحسب سعر مضبوط محتاج أعرف:\n• ${missing.join('\n• ')}`;
+                    session.messages.push({ role: 'bot', text: followUp });
+                    saveState();
+                    renderActiveChatMessages();
+                    document.getElementById('typingIndicator').style.display = 'none';
+                    speakTextArabic(followUp);
+                    return;
+                }
+
                 const inv = calculateExactPrintingJob(session.jobState);
 
                 if (session.title.startsWith('شغلانة جديدة')) {
@@ -1677,11 +1944,15 @@
                 saveState();
                 renderSidebarSessions();
                 renderActiveChatMessages();
+                document.getElementById('typingIndicator').style.display = 'none';
                 speakTextArabic(`إجمالي الحساب ${Math.round(inv.grandTotal)} جنيه`);
                 return;
             }
 
-            const fallback = `فهمت طلبك يا باشا، وعشان نطلع شغل مظبوط، قولي مثلاً: *"احسب 50 دفتر 4 في الاي 4 أصل وصورة"* أو *"عايز 20 دفتر 2 في التسعات أصل وصورة"*.`;
+            document.getElementById('typingIndicator').style.display = 'none';
+            const fallback = session.jobState && (!session.jobState.hasNumBooks || !session.jobState.hasFormula)
+                ? `لسه بجمع تفاصيل الشغل. ${!session.jobState.hasNumBooks ? 'قولي عدد الدفاتر، ' : ''}${!session.jobState.hasFormula ? 'والمقاس (مثلاً: 2 في التسعات أو A4).' : ''}`
+                : `معاك. أقدر أحسب شغل المطبعة من الأسعار والمقاسات المحفوظة، وأفهم التفاصيل لو كتبتها بأي ترتيب. ابعت عدد الدفاتر والمقاس، زي: **50 دفتر 4 في A4 أصل وصورة**. لو قصدك سؤال تاني وضحهولي بكلمتين.`;
             session.messages.push({ role: 'bot', text: fallback });
             saveState();
             renderActiveChatMessages();
@@ -1870,7 +2141,12 @@
 
         function updateSpeakButtonUI() {
             const btn = document.getElementById('voiceSpeakBtn');
-            btn.innerHTML = autoSpeak ? '🔊 مفعل' : '🔇 صامت';
+            const settingsBtn = document.getElementById('settingsSpeakBtn');
+            if (btn) {
+                btn.innerHTML = autoSpeak ? '🔊 <span class="button-label">مفعل</span>' : '🔇 <span class="button-label">صامت</span>';
+                btn.setAttribute('aria-label', autoSpeak ? 'إيقاف النطق الصوتي' : 'تفعيل النطق الصوتي');
+            }
+            if (settingsBtn) settingsBtn.textContent = autoSpeak ? '🔊 النطق مفعّل' : '🔇 النطق صامت';
         }
 
         function speakTextArabic(text, force = false) {
@@ -1929,7 +2205,13 @@
         function updateThemeButtonUI() {
             const btn = document.getElementById('themeBtn');
             const isLight = document.body.classList.contains('light-mode');
-            btn.innerHTML = isLight ? '🌙 ليلي' : '☀️ نهاري';
+            const label = isLight ? 'ليلي' : 'نهاري';
+            if (btn) {
+                btn.innerHTML = `${isLight ? '🌙' : '☀️'} <span class="button-label">${label}</span>`;
+                btn.setAttribute('aria-label', `التبديل إلى الوضع ${label}`);
+            }
+            const settingsBtn = document.getElementById('settingsThemeBtn');
+            if (settingsBtn) settingsBtn.textContent = `${isLight ? '🌙' : '☀️'} المظهر ${label}`;
         }
 
         function uploadCustomLogo(event) {
@@ -1949,11 +2231,16 @@
         }
 
         function toggleMobileSidebar() {
-            document.getElementById('sidebarPanel').classList.toggle('open');
-            document.getElementById('sidebarOverlay').classList.toggle('show');
+            const panel = document.getElementById('sidebarPanel');
+            const overlay = document.getElementById('sidebarOverlay');
+            const isOpen = panel.classList.toggle('open');
+            overlay.classList.toggle('show', isOpen);
+            overlay.setAttribute('aria-hidden', String(!isOpen));
+            document.getElementById('mobileHistoryBtn')?.setAttribute('aria-expanded', String(isOpen));
         }
 
         function openSettingsModal() {
+            closeMobileSidebarIfOpen();
             hideResetConfirmUI();
             document.getElementById('setZinc').value = settings.zincPrice;
             document.getElementById('setTraj').value = settings.trajPrice;
@@ -1969,6 +2256,20 @@
                     <input type="number" step="0.1" data-paper-key="${key}" class="form-input paper-price-input" value="${p.price}">
                 `;
                 papersGrid.appendChild(div);
+            });
+
+            const bindingsGrid = document.getElementById('settingsBindingsGrid');
+            bindingsGrid.innerHTML = '';
+            Object.keys(bindings).forEach(key => {
+                const b = bindings[key];
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label style="font-size:0.76rem; font-weight:700; color:var(--text-secondary); display:block; margin-bottom:2px;">${b.label || b.name} (ج):</label>
+                    <input type="number" min="0" step="0.05" data-binding-key="${key}" class="form-input binding-price-input" aria-label="سعر تجليد ${b.name}" value="${b.basePrice}">
+                    <label style="font-size:0.7rem; font-weight:600; color:var(--text-muted); display:block; margin:4px 0 2px;">لكل صورة إضافية:</label>
+                    <input type="number" min="0" step="0.05" data-binding-key="${key}" class="form-input binding-step-input" aria-label="زيادة التجليد للصور الإضافية ${b.name}" value="${b.stepPrice}">
+                `;
+                bindingsGrid.appendChild(div);
             });
 
             document.getElementById('settingsModal').style.display = 'flex';
@@ -1991,10 +2292,28 @@
                 }
             });
 
+            document.querySelectorAll('.binding-price-input').forEach(inp => {
+                const key = inp.getAttribute('data-binding-key');
+                const val = parseFloat(inp.value);
+                if (key && bindings[key] && Number.isFinite(val) && val >= 0) bindings[key].basePrice = val;
+            });
+            document.querySelectorAll('.binding-step-input').forEach(inp => {
+                const key = inp.getAttribute('data-binding-key');
+                const val = parseFloat(inp.value);
+                if (key && bindings[key] && Number.isFinite(val) && val >= 0) bindings[key].stepPrice = val;
+            });
+
             saveState();
             closeSettingsModal();
             showToast('✅ تم حفظ جميع الأسعار والإعدادات بنجاح');
         }
+
+        document.addEventListener('keydown', event => {
+            if (event.key !== 'Escape') return;
+            const modal = document.getElementById('settingsModal');
+            if (modal && modal.style.display === 'flex') closeSettingsModal();
+            closeMobileSidebarIfOpen();
+        });
 
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
